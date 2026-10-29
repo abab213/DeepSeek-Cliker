@@ -27,9 +27,9 @@ public partial class BattlePanel : PanelContainer
     {
         AddTexture(stage, "res://assets/art/road_battlefield.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
 
-        AddTexture(stage, "res://assets/art/mounted_gun.svg", new Vector2(195, 448), new Vector2(100, 155));
-        AddTexture(stage, "res://assets/art/characters/fish_head.webp", new Vector2(209, 540), new Vector2(82, 96));
-        AddTexture(stage, "res://assets/art/characters/fish_tail.svg", new Vector2(298, 588), new Vector2(52, 44));
+        AddTexture(stage, "res://assets/art/mounted_gun.svg", new Vector2(195, 548), new Vector2(100, 155));
+        AddTexture(stage, "res://assets/art/characters/fish_head.webp", new Vector2(209, 640), new Vector2(82, 96));
+        AddTexture(stage, "res://assets/art/characters/fish_tail.svg", new Vector2(298, 688), new Vector2(52, 44));
 
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -38,7 +38,6 @@ public partial class BattlePanel : PanelContainer
         stage.AddChild(fx);
 
         BuildTopHud(stage);
-        BuildBottomHud(stage);
     }
 
     private static void AddTexture(Control parent, string path, Vector2 position, Vector2 size, float alpha = 1f)
@@ -129,82 +128,6 @@ public partial class BattlePanel : PanelContainer
         stage.AddChild(panel);
     }
 
-    private static void BuildBottomHud(Control stage)
-    {
-        var hud = new MarginContainer
-        {
-            AnchorLeft = 0,
-            AnchorTop = 1,
-            AnchorRight = 1,
-            AnchorBottom = 1,
-            OffsetLeft = 0,
-            OffsetTop = -110,
-            OffsetRight = 0,
-            OffsetBottom = -14,
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        hud.AddThemeConstantOverride("margin_left", 14);
-        hud.AddThemeConstantOverride("margin_right", 14);
-        hud.AddThemeConstantOverride("margin_top", 0);
-        hud.AddThemeConstantOverride("margin_bottom", 0);
-
-        var panel = UiKit.PanelBox(
-            BuildDefenseHud(),
-            UiKit.Box(UiKit.Alpha(UiKit.BgTop, 0.86f), UiKit.Alpha(UiKit.Cyan, 0.2f), 12, 1, 12, new Color(0, 0, 0, 0.4f)));
-        panel.SizeFlagsVertical = SizeFlags.ShrinkEnd;
-        hud.AddChild(panel);
-        stage.AddChild(hud);
-    }
-
-    private static Control BuildDefenseHud()
-    {
-        var root = UiKit.VBox(8);
-
-        var top = UiKit.HBox(7);
-        top.AddChild(UiKit.Icon("res://assets/icons/icon_shield.svg", 15, UiKit.Green));
-        top.AddChild(UiKit.Label("防线耐久", 10, UiKit.Muted, UiKit.BodyFont));
-        top.AddChild(UiKit.HSpace(0, true));
-        top.AddChild(UiKit.Display("780 / 1000", 10, UiKit.Alpha(UiKit.Text, 0.82f)));
-        top.AddChild(UiKit.Display("78%", 15, UiKit.Green));
-        root.AddChild(top);
-
-        var bar = new ProgressBar
-        {
-            Value = 78,
-            MaxValue = 100,
-            ShowPercentage = false,
-            CustomMinimumSize = new Vector2(0, 7),
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        bar.AddThemeStyleboxOverride("background", UiKit.Box(new Color("040a11"), new Color("040a11"), 4, 0));
-        bar.AddThemeStyleboxOverride("fill", UiKit.Box(UiKit.Green, UiKit.Green, 4, 0));
-        root.AddChild(bar);
-
-        var bottom = UiKit.HBox(8);
-        var kills = UiKit.HBox(5);
-        kills.AddChild(UiKit.Icon("res://assets/icons/icon_skull.svg", 12, UiKit.Alpha(UiKit.Red, 0.9f)));
-        kills.AddChild(UiKit.Label("击杀 42", 10, UiKit.Muted, UiKit.BodyFont));
-        bottom.AddChild(kills);
-
-        bottom.AddChild(UiKit.HSpace(0, true));
-
-        var auto = UiKit.HBox(5);
-        auto.AddChild(UiKit.Icon("res://assets/icons/icon_fire.svg", 12, UiKit.Alpha(UiKit.Green, 0.85f)));
-        auto.AddChild(UiKit.Label("防线待命", 10, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BodyFont));
-        bottom.AddChild(auto);
-
-        bottom.AddChild(UiKit.HSpace(0, true));
-
-        var threat = UiKit.HBox(5);
-        var threatDot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
-        threatDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
-        threat.AddChild(threatDot);
-        threat.AddChild(UiKit.Label("威胁等级 低", 10, UiKit.Muted, UiKit.BodyFont));
-        bottom.AddChild(threat);
-
-        root.AddChild(bottom);
-        return UiKit.Pad(root, 14, 10, 14, 10);
-    }
 }
 
 public partial class StreetFx : Control

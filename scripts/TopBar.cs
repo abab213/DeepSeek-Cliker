@@ -19,7 +19,7 @@ public partial class TopBar : PanelContainer
 
         root.AddChild(BuildBrand());
         root.AddChild(MakeDivider());
-        root.AddChild(BuildStats());
+        root.AddChild(BuildStatsColumn());
         root.AddChild(BuildActions());
 
         return root;
@@ -46,6 +46,16 @@ public partial class TopBar : PanelContainer
         return brand;
     }
 
+    private Control BuildStatsColumn()
+    {
+        var column = UiKit.VBox(3);
+        column.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        column.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        column.AddChild(BuildStats());
+        column.AddChild(BuildSecondaryStats());
+        return column;
+    }
+
     private Control BuildStats()
     {
         var stats = UiKit.HBox(0);
@@ -63,6 +73,54 @@ public partial class TopBar : PanelContainer
         AddStat(stats, "res://assets/icons/icon_star.svg", "防线积分", "360", "分", UiKit.Gold);
 
         return stats;
+    }
+
+    private Control BuildSecondaryStats()
+    {
+        var row = UiKit.HBox(12);
+        row.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        row.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+
+        var defense = UiKit.HBox(5);
+        defense.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        defense.AddChild(UiKit.Icon("res://assets/icons/icon_shield.svg", 10, UiKit.Green));
+        defense.AddChild(UiKit.Label("防线 780/1000", 8, UiKit.Muted, UiKit.BodyFont));
+        var bar = new ProgressBar
+        {
+            Value = 78,
+            MaxValue = 100,
+            ShowPercentage = false,
+            CustomMinimumSize = new Vector2(82, 4),
+            MouseFilter = MouseFilterEnum.Ignore,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+        };
+        bar.AddThemeStyleboxOverride("background", UiKit.Box(new Color("040a11"), new Color("040a11"), 2, 0));
+        bar.AddThemeStyleboxOverride("fill", UiKit.Box(UiKit.Green, UiKit.Green, 2, 0));
+        defense.AddChild(bar);
+        defense.AddChild(UiKit.Display("78%", 9, UiKit.Green));
+        row.AddChild(defense);
+        row.AddChild(MakeDivider(11));
+        row.AddChild(SecondaryItem("res://assets/icons/icon_skull.svg", UiKit.Alpha(UiKit.Red, 0.9f), "击杀 42", UiKit.Muted));
+        row.AddChild(MakeDivider(11));
+        row.AddChild(SecondaryItem("res://assets/icons/icon_fire.svg", UiKit.Alpha(UiKit.Green, 0.85f), "防线待命", UiKit.Alpha(UiKit.Green, 0.9f)));
+        row.AddChild(UiKit.HSpace(0, true));
+        var threat = UiKit.HBox(5);
+        threat.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        var dot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
+        dot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
+        threat.AddChild(dot);
+        threat.AddChild(UiKit.Label("威胁等级 低", 8, UiKit.Muted, UiKit.BodyFont));
+        row.AddChild(threat);
+        return row;
+    }
+
+    private static Control SecondaryItem(string icon, Color tint, string text, Color color)
+    {
+        var item = UiKit.HBox(4);
+        item.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        item.AddChild(UiKit.Icon(icon, 10, tint));
+        item.AddChild(UiKit.Label(text, 8, color, UiKit.BodyFont));
+        return item;
     }
 
     private Control BuildActions()
