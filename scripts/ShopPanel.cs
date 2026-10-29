@@ -32,10 +32,10 @@ public partial class ShopPanel : PanelContainer
         var titles = UiKit.VBox(1);
         titles.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         var titleRow = UiKit.HBox(8);
-        titleRow.AddChild(UiKit.Label("补给站", 20, UiKit.Text, UiKit.BoldFont));
-        titleRow.AddChild(UiKit.Tag("SUPPLY", UiKit.Gold, 8));
+        titleRow.AddChild(UiKit.Label("营地", 20, UiKit.Text, UiKit.BoldFont));
+        titleRow.AddChild(UiKit.Tag("CAMP", UiKit.Gold, 8));
         titles.AddChild(titleRow);
-        titles.AddChild(UiKit.Label("S U P P L Y  D E P O T  //  建 筑 与 战 术 物 资", 8, UiKit.Alpha(UiKit.Cyan, 0.7f), UiKit.DisplayFont));
+        titles.AddChild(UiKit.Label("C A M P  //  商 店 · 安 全 区", 8, UiKit.Alpha(UiKit.Cyan, 0.7f), UiKit.DisplayFont));
         header.AddChild(titles);
 
         var online = UiKit.HBox(6);
@@ -43,21 +43,43 @@ public partial class ShopPanel : PanelContainer
         var dot = new Panel { CustomMinimumSize = new Vector2(6, 6), SizeFlagsVertical = SizeFlags.ShrinkCenter };
         dot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
         online.AddChild(dot);
-        online.AddChild(UiKit.Label("补给中", 9, UiKit.Alpha(UiKit.Green, 0.86f), UiKit.BodyFont));
+        online.AddChild(UiKit.Label("营地在线", 9, UiKit.Alpha(UiKit.Green, 0.86f), UiKit.BodyFont));
         header.AddChild(online);
         root.AddChild(header);
 
         var accent = UiKit.HBox(4);
-        var accentMain = new ColorRect { Color = UiKit.Cyan, CustomMinimumSize = new Vector2(30, 2) };
-        var accentGold = new ColorRect { Color = UiKit.Alpha(UiKit.Gold, 0.7f), CustomMinimumSize = new Vector2(10, 2) };
-        accent.AddChild(accentMain);
-        accent.AddChild(accentGold);
+        accent.AddChild(new ColorRect { Color = UiKit.Cyan, CustomMinimumSize = new Vector2(30, 2) });
+        accent.AddChild(new ColorRect { Color = UiKit.Alpha(UiKit.Gold, 0.7f), CustomMinimumSize = new Vector2(10, 2) });
         root.AddChild(UiKit.VSpace(9));
         root.AddChild(accent);
         root.AddChild(UiKit.VSpace(12));
 
-        root.AddChild(BuildTabs());
-        root.AddChild(UiKit.VSpace(12));
+        var body = UiKit.VBox(10);
+        body.SizeFlagsVertical = SizeFlags.ExpandFill;
+        body.AddChild(BuildShop());
+        body.AddChild(BuildSafeZone());
+        root.AddChild(body);
+
+        return root;
+    }
+
+    private static Control BuildShop()
+    {
+        var shop = UiKit.VBox(0);
+        shop.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        shop.SizeFlagsVertical = SizeFlags.ExpandFill;
+
+        var head = UiKit.HBox(8);
+        head.AddChild(UiKit.Icon("res://assets/icons/icon_building.svg", 14, UiKit.Cyan));
+        head.AddChild(UiKit.Label("商店", 15, UiKit.Text, UiKit.BoldFont));
+        head.AddChild(UiKit.Tag("SHOP", UiKit.Gold, 7));
+        head.AddChild(UiKit.HSpace(0, true));
+        head.AddChild(UiKit.Label("已解锁 6 项", 8, UiKit.Faint, UiKit.BodyFont));
+        shop.AddChild(head);
+        shop.AddChild(UiKit.VSpace(8));
+
+        shop.AddChild(BuildTabs());
+        shop.AddChild(UiKit.VSpace(8));
 
         var scroll = new ScrollContainer
         {
@@ -67,29 +89,54 @@ public partial class ShopPanel : PanelContainer
             VerticalScrollMode = ScrollContainer.ScrollMode.Auto,
         };
 
-        var list = UiKit.VBox(8);
+        var list = UiKit.VBox(6);
         list.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        list.CustomMinimumSize = new Vector2(560, 0);
         foreach (var item in Items)
             list.AddChild(BuildCard(item, item.Recommended));
 
         scroll.AddChild(list);
-        root.AddChild(scroll);
+        shop.AddChild(scroll);
 
-        root.AddChild(UiKit.VSpace(10));
-        root.AddChild(UiKit.HLine(UiKit.Alpha(UiKit.Cyan, 0.1f), 1));
-        root.AddChild(UiKit.VSpace(9));
+        shop.AddChild(UiKit.VSpace(6));
+        shop.AddChild(UiKit.Label("建筑会持续产出白饭 · 价格随购买次数上涨", 8, UiKit.Faint, UiKit.BodyFont));
+        return shop;
+    }
 
-        var footer = UiKit.HBox(6);
-        footer.AddChild(UiKit.Label("建筑会持续产出白饭 · 价格随购买次数上涨", 9, UiKit.Faint, UiKit.BodyFont));
-        footer.AddChild(UiKit.HSpace(0, true));
-        var autoDot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
-        autoDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
-        footer.AddChild(autoDot);
-        footer.AddChild(UiKit.Label("自动结算中", 9, UiKit.Alpha(UiKit.Green, 0.8f), UiKit.BodyFont));
-        root.AddChild(footer);
+    private static Control BuildSafeZone()
+    {
+        var safe = UiKit.VBox(6);
+        safe.CustomMinimumSize = new Vector2(0, 104);
+        safe.SizeFlagsVertical = SizeFlags.ShrinkEnd;
 
-        return root;
+        var head = UiKit.HBox(7);
+        head.AddChild(UiKit.Icon("res://assets/icons/icon_shield.svg", 13, UiKit.Alpha(UiKit.Green, 0.9f)));
+        head.AddChild(UiKit.Label("安全区", 13, UiKit.Text, UiKit.BoldFont));
+        head.AddChild(UiKit.Tag("空地", UiKit.Alpha(UiKit.Green, 0.72f), 7));
+        head.AddChild(UiKit.HSpace(0, true));
+        head.AddChild(UiKit.Label("S A F E  Z O N E", 7, UiKit.Alpha(UiKit.Cyan, 0.45f), UiKit.DisplayFont));
+        safe.AddChild(head);
+
+        var ground = new SafeGround
+        {
+            CustomMinimumSize = new Vector2(0, 70),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ExpandFill,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+
+        var center = new CenterContainer();
+        center.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        center.MouseFilter = MouseFilterEnum.Ignore;
+
+        var row = UiKit.HBox(10);
+        row.Alignment = BoxContainer.AlignmentMode.Center;
+        row.AddChild(UiKit.Icon("res://assets/icons/icon_shield.svg", 18, UiKit.Alpha(UiKit.Green, 0.28f)));
+        row.AddChild(UiKit.Label("暂无设施", 10, UiKit.Alpha(UiKit.Text, 0.62f), UiKit.BoldFont));
+        row.AddChild(UiKit.Label("· 等待部署", 8, UiKit.Faint, UiKit.BodyFont));
+        center.AddChild(row);
+        ground.AddChild(center);
+        safe.AddChild(ground);
+        return safe;
     }
 
     private static readonly List<ShopItem> Items = new()
@@ -159,30 +206,29 @@ public partial class ShopPanel : PanelContainer
 
     private static Control BuildTabs()
     {
-        var tabs = UiKit.HBox(8);
-
-        var active = UiKit.HBox(7);
-        active.AddChild(UiKit.Icon("res://assets/icons/icon_building.svg", 14, UiKit.Cyan));
-        active.AddChild(UiKit.Label("建筑", 10, UiKit.Text, UiKit.BoldFont));
-        active.AddChild(UiKit.Display("06", 9, UiKit.Alpha(UiKit.Cyan, 0.8f)));
-        var activePanel = UiKit.PanelBox(
-            UiKit.Pad(active, 11, 5, 11, 5),
-            UiKit.Box(UiKit.Alpha(UiKit.Cyan, 0.08f), UiKit.Alpha(UiKit.Cyan, 0.36f), 8));
-        tabs.AddChild(activePanel);
-
-        var inactive = UiKit.HBox(7);
-        inactive.AddChild(UiKit.Icon("res://assets/icons/icon_lock.svg", 12, UiKit.Faint));
-        inactive.AddChild(UiKit.Label("战术道具", 10, UiKit.Faint, UiKit.BodyFont));
-        inactive.AddChild(UiKit.Label("即将开放", 8, UiKit.Alpha(UiKit.Faint, 0.8f), UiKit.BodyFont));
-        var inactivePanel = UiKit.PanelBox(
-            UiKit.Pad(inactive, 11, 5, 11, 5),
-            UiKit.Box(new Color(0, 0, 0, 0), UiKit.Alpha(UiKit.Line, 0.55f), 8));
-        inactivePanel.TooltipText = "战术道具将在后续版本开放";
-        tabs.AddChild(inactivePanel);
-
+        var tabs = UiKit.HBox(6);
+        tabs.AddChild(BuildTab("res://assets/icons/icon_building.svg", "建筑", "06", true));
+        tabs.AddChild(BuildTab("res://assets/icons/icon_target.svg", "战斗装备", "00", false));
+        tabs.AddChild(BuildTab("res://assets/icons/icon_flask.svg", "战术道具", "00", false));
         tabs.AddChild(UiKit.HSpace(0, true));
-        tabs.AddChild(UiKit.Label("已解锁 6 项", 9, UiKit.Faint, UiKit.BodyFont));
         return tabs;
+    }
+
+    private static Control BuildTab(string icon, string title, string count, bool active)
+    {
+        var group = UiKit.HBox(5);
+        group.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        group.AddChild(UiKit.Icon(icon, 12, active ? UiKit.Cyan : UiKit.Alpha(UiKit.Faint, 0.9f)));
+        group.AddChild(UiKit.Label(title, 9, active ? UiKit.Text : UiKit.Faint, active ? UiKit.BoldFont : UiKit.BodyFont));
+        group.AddChild(UiKit.Display(count, 8, active ? UiKit.Alpha(UiKit.Cyan, 0.8f) : UiKit.Alpha(UiKit.Faint, 0.7f)));
+
+        var panel = UiKit.PanelBox(
+            UiKit.Pad(group, 8, 4, 8, 4),
+            active
+                ? UiKit.Box(UiKit.Alpha(UiKit.Cyan, 0.08f), UiKit.Alpha(UiKit.Cyan, 0.36f), 7)
+                : UiKit.Box(new Color(0, 0, 0, 0), UiKit.Alpha(UiKit.Line, 0.55f), 7));
+        panel.TooltipText = active ? $"{title}分类" : $"{title}分类暂未上架";
+        return panel;
     }
 
     private static Control BuildCard(ShopItem item, bool recommended)
@@ -190,81 +236,120 @@ public partial class ShopPanel : PanelContainer
         var border = recommended ? UiKit.Alpha(UiKit.Gold, 0.34f) : UiKit.LineSoft;
         var card = new PanelContainer
         {
-            CustomMinimumSize = new Vector2(0, 88),
+            CustomMinimumSize = new Vector2(0, 72),
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
             Modulate = item.Affordable ? Colors.White : new Color(1, 1, 1, 0.62f),
             MouseFilter = MouseFilterEnum.Stop,
             TooltipText = $"{item.Name}：{item.Description}",
         };
-        card.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Alpha(UiKit.PanelDeep, 0.86f), border, 11, 1));
-        card.AddChild(UiKit.Pad(BuildCardRow(item, recommended), 12, 8, 12, 8));
+        card.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Alpha(UiKit.PanelDeep, 0.86f), border, 10, 1));
+        card.AddChild(UiKit.Pad(BuildCardRow(item, recommended), 10, 6, 10, 6));
         return card;
     }
 
     private static Control BuildCardRow(ShopItem item, bool recommended)
     {
-        var row = UiKit.HBox(12);
+        var row = UiKit.HBox(9);
         row.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
         var iconTile = new PanelContainer
         {
-            CustomMinimumSize = new Vector2(58, 58),
+            CustomMinimumSize = new Vector2(46, 46),
             SizeFlagsVertical = SizeFlags.ShrinkCenter,
         };
         iconTile.AddThemeStyleboxOverride(
             "panel",
-            UiKit.Box(UiKit.Alpha(item.Accent, 0.055f), UiKit.Alpha(item.Accent, 0.18f), 10));
+            UiKit.Box(UiKit.Alpha(item.Accent, 0.055f), UiKit.Alpha(item.Accent, 0.18f), 9));
         var center = new CenterContainer();
-        center.AddChild(UiKit.Icon(item.Icon, 44));
+        center.AddChild(UiKit.Icon(item.Icon, 34));
         iconTile.AddChild(center);
         row.AddChild(iconTile);
 
-        var text = UiKit.VBox(3);
+        var text = UiKit.VBox(2);
         text.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         text.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
-        var titleLine = UiKit.HBox(7);
-        titleLine.AddChild(UiKit.Label(item.Name, 14, UiKit.Text, UiKit.BoldFont));
+        var titleLine = UiKit.HBox(6);
+        titleLine.AddChild(UiKit.Label(item.Name, 12, UiKit.Text, UiKit.BoldFont));
         if (recommended)
-            titleLine.AddChild(UiKit.Tag("推荐", UiKit.Gold, 8));
+            titleLine.AddChild(UiKit.Tag("推荐", UiKit.Gold, 7));
         titleLine.AddChild(UiKit.HSpace(0, true));
-        var owned = UiKit.HBox(4);
-        owned.AddChild(UiKit.Label("持有", 9, UiKit.Faint, UiKit.BodyFont));
-        owned.AddChild(UiKit.Display("×" + item.Owned, 10, UiKit.Alpha(UiKit.Cyan, 0.8f)));
+        var owned = UiKit.HBox(3);
+        owned.AddChild(UiKit.Label("持有", 8, UiKit.Faint, UiKit.BodyFont));
+        owned.AddChild(UiKit.Display("×" + item.Owned, 9, UiKit.Alpha(UiKit.Cyan, 0.8f)));
         titleLine.AddChild(owned);
         text.AddChild(titleLine);
 
-        var desc = UiKit.Label(item.Description, 10, UiKit.Muted, UiKit.BodyFont);
+        var desc = UiKit.Label(item.Description, 9, UiKit.Muted, UiKit.BodyFont);
         desc.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
         desc.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         text.AddChild(desc);
 
-        var stat = UiKit.HBox(5);
-        stat.AddChild(UiKit.Icon(item.StatIcon, 12, UiKit.Alpha(item.Accent, 0.92f)));
-        stat.AddChild(UiKit.Label(item.Stat, 10, UiKit.Alpha(item.Accent, 0.96f), UiKit.BodyFont));
+        var stat = UiKit.HBox(4);
+        stat.AddChild(UiKit.Icon(item.StatIcon, 10, UiKit.Alpha(item.Accent, 0.92f)));
+        stat.AddChild(UiKit.Label(item.Stat, 9, UiKit.Alpha(item.Accent, 0.96f), UiKit.BodyFont));
         text.AddChild(stat);
 
         row.AddChild(text);
 
-        var costBox = UiKit.VBox(4);
-        costBox.CustomMinimumSize = new Vector2(104, 0);
+        var costBox = UiKit.VBox(3);
+        costBox.CustomMinimumSize = new Vector2(90, 0);
         costBox.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
-        var costLine = UiKit.HBox(4);
+        var costLine = UiKit.HBox(3);
         costLine.Alignment = BoxContainer.AlignmentMode.End;
-        costLine.AddChild(UiKit.Icon("res://assets/icons/icon_rice.svg", 12, UiKit.Alpha(UiKit.Gold, 0.9f)));
-        costLine.AddChild(UiKit.Display(item.Cost, 15, item.Affordable ? UiKit.Gold : UiKit.Alpha(UiKit.Red, 0.75f)));
-        costLine.AddChild(UiKit.Label("白饭", 9, UiKit.Faint, UiKit.BodyFont));
+        costLine.AddChild(UiKit.Icon("res://assets/icons/icon_rice.svg", 10, UiKit.Alpha(UiKit.Gold, 0.9f)));
+        costLine.AddChild(UiKit.Display(item.Cost, 12, item.Affordable ? UiKit.Gold : UiKit.Alpha(UiKit.Red, 0.75f)));
+        costLine.AddChild(UiKit.Label("白饭", 8, UiKit.Faint, UiKit.BodyFont));
         costBox.AddChild(costLine);
 
         var button = item.Affordable
-            ? UiKit.Button("购买", UiKit.Alpha(UiKit.Gold, 0.92f), UiKit.Gold, new Color("241a07"), 10)
-            : UiKit.Button("白饭不足", UiKit.PanelDeep, UiKit.LineSoft, UiKit.Faint, 9);
+            ? UiKit.Button("购买", UiKit.Alpha(UiKit.Gold, 0.92f), UiKit.Gold, new Color("241a07"), 9)
+            : UiKit.Button("白饭不足", UiKit.PanelDeep, UiKit.LineSoft, UiKit.Faint, 8);
         button.Disabled = !item.Affordable;
-        button.CustomMinimumSize = new Vector2(0, 26);
+        button.CustomMinimumSize = new Vector2(0, 22);
         costBox.AddChild(button);
 
         row.AddChild(costBox);
         return row;
+    }
+}
+
+public partial class SafeGround : Control
+{
+    public override void _Draw()
+    {
+        var w = Size.X;
+        var h = Size.Y;
+        var rect = new Rect2(1, 1, Mathf.Max(0, w - 2), Mathf.Max(0, h - 2));
+        DrawRect(rect, new Color(0.015f, 0.035f, 0.05f, 0.52f));
+
+        var grid = new Color(0.24f, 0.7f, 0.75f, 0.045f);
+        for (float x = 0; x < w; x += 22)
+            DrawLine(new Vector2(x, 0), new Vector2(x, h), grid, 1);
+        for (float y = 0; y < h; y += 22)
+            DrawLine(new Vector2(0, y), new Vector2(w, y), grid, 1);
+
+        var line = new Color(0.28f, 0.85f, 0.85f, 0.28f);
+        for (float x = 4; x < w; x += 14)
+        {
+            DrawLine(new Vector2(x, 1), new Vector2(Mathf.Min(x + 7, w), 1), line, 1);
+            DrawLine(new Vector2(x, h - 1), new Vector2(Mathf.Min(x + 7, w), h - 1), line, 1);
+        }
+        for (float y = 4; y < h; y += 14)
+        {
+            DrawLine(new Vector2(1, y), new Vector2(1, Mathf.Min(y + 7, h)), line, 1);
+            DrawLine(new Vector2(w - 1, y), new Vector2(w - 1, Mathf.Min(y + 7, h)), line, 1);
+        }
+
+        var corner = new Color(0.35f, 0.95f, 1f, 0.55f);
+        DrawLine(new Vector2(0, 16), new Vector2(0, 0), corner, 2);
+        DrawLine(new Vector2(0, 0), new Vector2(16, 0), corner, 2);
+        DrawLine(new Vector2(w - 16, 0), new Vector2(w, 0), corner, 2);
+        DrawLine(new Vector2(w, 0), new Vector2(w, 16), corner, 2);
+        DrawLine(new Vector2(0, h - 16), new Vector2(0, h), corner, 2);
+        DrawLine(new Vector2(0, h), new Vector2(16, h), corner, 2);
+        DrawLine(new Vector2(w - 16, h), new Vector2(w, h), corner, 2);
+        DrawLine(new Vector2(w, h), new Vector2(w, h - 16), corner, 2);
     }
 }
