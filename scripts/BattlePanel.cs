@@ -29,7 +29,6 @@ public partial class BattlePanel : PanelContainer
 
         AddTexture(stage, "res://assets/art/mounted_gun.svg", new Vector2(195, 448), new Vector2(100, 155));
         AddTexture(stage, "res://assets/art/characters/fish_head.webp", new Vector2(209, 540), new Vector2(82, 96));
-        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(195, 528), new Vector2(110, 69));
         AddTexture(stage, "res://assets/art/characters/fish_tail.svg", new Vector2(298, 588), new Vector2(52, 44));
 
         var fx = new StreetFx();
