@@ -17,6 +17,7 @@ public sealed class SaveData
     public int Wave { get; set; } = 1;
     public bool AutoSave { get; set; } = true;
     public bool EffectsEnabled { get; set; } = true;
+    public bool AudioEnabled { get; set; } = true;
 }
 
 public static class SaveService

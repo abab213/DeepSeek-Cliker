@@ -94,6 +94,7 @@ public partial class CombatField : Control
 
     private void StartWave()
     {
+        AudioManager.Play("wave", 0.8f);
         _wave = _state.Wave;
         _spawnLeft = 8 + _wave * 2;
         _spawnInterval = Mathf.Max(0.3f, 0.55f - _wave * 0.02f);
@@ -126,6 +127,7 @@ public partial class CombatField : Control
             if (zombie.Y >= DefenseLine)
             {
                 _state.DamageDefense(zombie.Damage);
+                AudioManager.Play("breach", 0.85f);
                 _hitFlash = _state.EffectsEnabled ? 1f : 0f;
                 Burst(new Vector2(zombie.X, DefenseLine), UiKit.Red, 8);
                 _zombies.RemoveAt(i);
@@ -203,6 +205,7 @@ public partial class CombatField : Control
             return;
 
         _fireTimer = (float)_state.FireInterval * (_state.OverloadTimer > 0 ? 0.55f : 1f);
+        AudioManager.Play("shot", 0.55f);
         var hit = new Vector2(target.X, target.Y - 38f * target.Scale);
 
         if (_state.EffectsEnabled)
@@ -225,6 +228,7 @@ public partial class CombatField : Control
         if (target.Hp <= 0f)
         {
             _zombies.Remove(target);
+            AudioManager.Play("hit", 0.65f);
             Burst(hit, new Color("59d68a"), 7);
             _state.AddKill(10 + _wave * 3, 2 + _wave * 0.5);
         }

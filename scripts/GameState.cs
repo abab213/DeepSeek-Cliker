@@ -104,6 +104,7 @@ public sealed class GameState
     public bool Paused { get; private set; }
     public bool AutoSave { get; set; } = true;
     public bool EffectsEnabled { get; set; } = true;
+    public bool AudioEnabled { get; set; } = true;
     public double OverloadTimer { get; private set; }
     public double FreezeTimer { get; private set; }
     public double Combo { get; private set; } = 1.0;
@@ -119,6 +120,8 @@ public sealed class GameState
 
     public event Action? Changed;
     public event Action<double, bool>? Clicked;
+    public event Action? PurchaseMade;
+    public event Action? TacticalUsed;
     public event Action? GameEnded;
 
     public GameState()
@@ -407,6 +410,7 @@ public sealed class GameState
         Rice -= building.Cost;
         building.Owned++;
         Recalculate();
+        PurchaseMade?.Invoke();
         Changed?.Invoke();
         return true;
     }
@@ -425,6 +429,7 @@ public sealed class GameState
         if (equipment.DefenseBonus > 0)
             Defense = Math.Min(MaxDefense + equipment.DefenseBonus, Defense + equipment.DefenseBonus);
         Recalculate();
+        PurchaseMade?.Invoke();
         Changed?.Invoke();
         return true;
     }
@@ -440,6 +445,7 @@ public sealed class GameState
 
         Rice -= facility.Cost;
         facility.Owned++;
+        PurchaseMade?.Invoke();
         Changed?.Invoke();
         return true;
     }
@@ -471,6 +477,7 @@ public sealed class GameState
                 break;
         }
 
+        TacticalUsed?.Invoke();
         Changed?.Invoke();
         return true;
     }
@@ -551,6 +558,7 @@ public sealed class GameState
             Wave = Wave,
             AutoSave = AutoSave,
             EffectsEnabled = EffectsEnabled,
+            AudioEnabled = AudioEnabled,
         };
     }
 
@@ -585,6 +593,7 @@ public sealed class GameState
         Wave = Math.Max(1, data.Wave);
         AutoSave = data.AutoSave;
         EffectsEnabled = data.EffectsEnabled;
+        AudioEnabled = data.AudioEnabled;
         WaveActive = false;
         WaveTimer = 5;
         GameOver = false;

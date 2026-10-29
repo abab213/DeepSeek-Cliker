@@ -67,6 +67,12 @@ public partial class Main : Control
 
         AddChild(frame);
         AddChild(_menu);
+        AudioManager.Init(this);
+        AudioManager.SetEnabled(_state.AudioEnabled);
+        _state.Clicked += (_, _) => AudioManager.Play("click");
+        _state.PurchaseMade += () => AudioManager.Play("buy");
+        _state.TacticalUsed += () => AudioManager.Play("tactical");
+        _state.GameEnded += () => AudioManager.Play("gameover");
 
         if (HasArg("--demo"))
         {
