@@ -26,7 +26,6 @@ public partial class BattlePanel : PanelContainer
     private void BuildStage(Control stage)
     {
         AddTexture(stage, "res://assets/art/road_battlefield.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
-        AddTexture(stage, "res://assets/art/sandbag_line.svg", new Vector2(0, 575), new Vector2(500, 90));
 
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
