@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="build/**/*.cs" />
+    <Compile Remove="preview/**/*.cs" />
+    <Compile Remove="tools/**/*.cs" />
+  </ItemGroup>
 </Project>

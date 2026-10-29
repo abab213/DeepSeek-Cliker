@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -36,12 +37,23 @@ public static class SaveService
 
     public static string LastError { get; private set; } = "";
 
+    private static string[] SavePaths()
+    {
+        var paths = new List<string>();
+        var home = System.Environment.GetEnvironmentVariable("CLICKDEEPSEEK_HOME");
+        if (!string.IsNullOrWhiteSpace(home))
+            paths.Add(Path.Combine(home, "savegame.json"));
+        paths.Add(ProjectSettings.GlobalizePath(ResSave));
+        paths.Add(ProjectSettings.GlobalizePath(UserSave));
+        return paths.ToArray();
+    }
+
     public static bool Save(GameState state)
     {
         LastError = "";
         var json = JsonSerializer.Serialize(state.CreateSave(), Options);
 
-        foreach (var path in new[] { ProjectSettings.GlobalizePath(UserSave), ProjectSettings.GlobalizePath(ResSave) })
+        foreach (var path in SavePaths())
         {
             try
             {
@@ -62,7 +74,7 @@ public static class SaveService
 
     public static SaveData? Load()
     {
-        foreach (var path in new[] { ProjectSettings.GlobalizePath(UserSave), ProjectSettings.GlobalizePath(ResSave) })
+        foreach (var path in SavePaths())
         {
             try
             {
@@ -84,13 +96,15 @@ public static class SaveService
 
     public static bool HasSave()
     {
-        return File.Exists(ProjectSettings.GlobalizePath(UserSave)) ||
-               File.Exists(ProjectSettings.GlobalizePath(ResSave));
+        foreach (var path in SavePaths())
+            if (File.Exists(path))
+                return true;
+        return false;
     }
 
     public static void Clear()
     {
-        foreach (var path in new[] { ProjectSettings.GlobalizePath(UserSave), ProjectSettings.GlobalizePath(ResSave) })
+        foreach (var path in SavePaths())
         {
             try
             {

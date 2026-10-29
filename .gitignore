@@ -22,3 +22,6 @@ obj/
 
 # Local save data
 /savegame.json
+
+# Local packaged build/installer output
+/build/
