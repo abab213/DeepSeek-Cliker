@@ -37,7 +37,6 @@ public sealed class Building : ShopEntry
 
 public sealed class Equipment : ShopEntry
 {
-    public int MaxLevel { get; init; } = 5;
     public int PowerBonus { get; init; }
     public int DamageBonus { get; init; }
     public double FireIntervalDelta { get; init; }
@@ -224,7 +223,6 @@ public sealed class GameState
             Accent = UiKit.Cyan,
             BaseCost = 180,
             Growth = 1.4,
-            MaxLevel = 5,
             DamageBonus = 8,
             PowerBonus = 6,
         });
@@ -234,13 +232,12 @@ public sealed class GameState
             Name = "冷却组件",
             Description = "水冷套件与轻量化枪机，缩短射击间隔。",
             Icon = "res://assets/icons/icon_rate.svg",
-            Stat = "-0.02 秒射击间隔 / 级",
+            Stat = "-6% 射击间隔 / 级",
             StatIcon = "res://assets/icons/icon_fire.svg",
             Accent = UiKit.Green,
             BaseCost = 220,
             Growth = 1.4,
-            MaxLevel = 5,
-            FireIntervalDelta = 0.02,
+            FireIntervalDelta = 0.06,
             PowerBonus = 4,
         });
         Equipment.Add(new Equipment
@@ -254,7 +251,6 @@ public sealed class GameState
             Accent = UiKit.Gold,
             BaseCost = 280,
             Growth = 1.45,
-            MaxLevel = 4,
             BruteBonus = 0.2,
             PowerBonus = 5,
         });
@@ -269,7 +265,6 @@ public sealed class GameState
             Accent = UiKit.Green,
             BaseCost = 500,
             Growth = 1.5,
-            MaxLevel = 5,
             DefenseBonus = 100,
             PowerBonus = 8,
         });
@@ -462,7 +457,7 @@ public sealed class GameState
             return false;
 
         var equipment = Equipment[index];
-        if (equipment.Owned >= equipment.MaxLevel || Rice < equipment.Cost)
+        if (Rice < equipment.Cost)
             return false;
 
         Rice -= equipment.Cost;
@@ -664,7 +659,8 @@ public sealed class GameState
         double damage = 10 + CombatPower * 1.1 + Equipment.Sum(e => e.DamageBonus * e.Owned);
         damage *= 1.0 + Facilities.Sum(f => f.GunDamageBonus * f.Owned);
         GunDamage = damage;
-        FireInterval = Math.Max(0.14, 0.38 - Equipment.Sum(e => e.FireIntervalDelta * e.Owned));
+        var coolingLevels = Equipment.Sum(e => e.FireIntervalDelta > 0 ? e.Owned : 0);
+        FireInterval = Math.Max(0.06, 0.38 * Math.Pow(0.94, coolingLevels));
         BruteDamageMultiplier = 1.0 + Equipment.Sum(e => e.BruteBonus * e.Owned);
 
         double max = 1000 + Equipment.Sum(e => e.DefenseBonus * e.Owned);

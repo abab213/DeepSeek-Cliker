@@ -34,6 +34,37 @@ public partial class ShopPanel : PanelContainer
         Refresh();
     }
 
+    public void ActivateShopShortcut(int index)
+    {
+        var count = _category switch
+        {
+            ShopCategory.Building => _state.Buildings.Count,
+            ShopCategory.Equipment => _state.Equipment.Count,
+            _ => _state.Tacticals.Count,
+        };
+        if (index < 0 || index >= count)
+            return;
+
+        switch (_category)
+        {
+            case ShopCategory.Building:
+                _state.TryBuy(index);
+                break;
+            case ShopCategory.Equipment:
+                _state.BuyEquipment(index);
+                break;
+            case ShopCategory.Tactical:
+                _state.UseTactical(index);
+                break;
+        }
+    }
+
+    public void ActivateFacilityShortcut(int index)
+    {
+        if (index >= 0 && index < _state.Facilities.Count)
+            _state.BuyFacility(index);
+    }
+
     private Control BuildContent()
     {
         var root = UiKit.VBox(0);
@@ -89,7 +120,11 @@ public partial class ShopPanel : PanelContainer
         shop.AddChild(UiKit.VSpace(8));
 
         shop.AddChild(BuildTabs());
-        shop.AddChild(UiKit.VSpace(8));
+        shop.AddChild(UiKit.VSpace(6));
+        shop.AddChild(UiKit.Label(
+            "快捷键 1-6 购买当前分类 · Q/W/E/R/T/Y 升级安全区",
+            7, UiKit.Faint, UiKit.BodyFont));
+        shop.AddChild(UiKit.VSpace(6));
 
         var scroll = new ScrollContainer
         {
@@ -158,6 +193,8 @@ public partial class ShopPanel : PanelContainer
 
         var box = UiKit.VBox(3);
         var top = UiKit.HBox(5);
+        const string facilityKeys = "QWERTY";
+        top.AddChild(UiKit.Tag(facilityKeys[index].ToString(), UiKit.Alpha(UiKit.Cyan, 0.8f), 6));
         top.AddChild(UiKit.Icon(facility.Icon, 12, UiKit.Alpha(facility.Accent, 0.9f)));
         top.AddChild(UiKit.Label(facility.Name, 9, UiKit.Text, UiKit.BoldFont));
         top.AddChild(UiKit.HSpace(0, true));
@@ -338,6 +375,7 @@ public partial class ShopPanel : PanelContainer
         text.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
         var titleLine = UiKit.HBox(6);
+        titleLine.AddChild(UiKit.Tag($"{index + 1}", UiKit.Alpha(UiKit.Cyan, 0.8f), 6));
         titleLine.AddChild(UiKit.Label(entry.Name, 12, UiKit.Text, UiKit.BoldFont));
         if (entry is Building { Recommended: true })
             titleLine.AddChild(UiKit.Tag("推荐", UiKit.Gold, 7));
@@ -407,7 +445,7 @@ public partial class ShopPanel : PanelContainer
         _footer.Text = _category switch
         {
             ShopCategory.Building => "建筑会持续产出白饭 · 价格随购买次数上涨",
-            ShopCategory.Equipment => "战斗装备永久生效 · 价格随等级上涨",
+            ShopCategory.Equipment => "战斗装备永久生效 · 无限升级 · 价格随等级上涨",
             _ => "战术道具消耗白饭 · 使用后进入冷却",
         };
 
@@ -448,10 +486,6 @@ public partial class ShopPanel : PanelContainer
                     break;
                 case Tactical tactical when tactical.Kind == TacticalKind.Repair && _state.Defense >= _state.MaxDefense:
                     buttonText = "防线满";
-                    enabled = false;
-                    break;
-                case Equipment equipment when equipment.Owned >= equipment.MaxLevel:
-                    buttonText = "已满级";
                     enabled = false;
                     break;
                 default:

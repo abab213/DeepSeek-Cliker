@@ -116,6 +116,12 @@ public partial class Main : Control
             _state.BuyFacility(1);
         }
 
+        if (HasArg("--test-shortcuts"))
+        {
+            _shop.ActivateShopShortcut(0);
+            _shop.ActivateFacilityShortcut(0);
+        }
+
         if (HasArg("--pause"))
             _menu.OpenPause();
         if (HasArg("--settings"))
@@ -124,6 +130,51 @@ public partial class Main : Control
             SaveService.Save(_state);
 
         CaptureIfRequested();
+    }
+
+    public override void _UnhandledKeyInput(InputEvent @event)
+    {
+        if (_state.Paused || _state.GameOver)
+            return;
+        if (@event is not InputEventKey key || !key.Pressed || key.Echo)
+            return;
+
+        var code = (int)key.Keycode;
+        var first = (int)Key.Key1;
+        if (code >= first && code <= (int)Key.Key6)
+        {
+            _shop.ActivateShopShortcut(code - first);
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
+        switch (key.Keycode)
+        {
+            case Key.Q:
+                _shop.ActivateFacilityShortcut(0);
+                GetViewport().SetInputAsHandled();
+                break;
+            case Key.W:
+                _shop.ActivateFacilityShortcut(1);
+                GetViewport().SetInputAsHandled();
+                break;
+            case Key.E:
+                _shop.ActivateFacilityShortcut(2);
+                GetViewport().SetInputAsHandled();
+                break;
+            case Key.R:
+                _shop.ActivateFacilityShortcut(3);
+                GetViewport().SetInputAsHandled();
+                break;
+            case Key.T:
+                _shop.ActivateFacilityShortcut(4);
+                GetViewport().SetInputAsHandled();
+                break;
+            case Key.Y:
+                _shop.ActivateFacilityShortcut(5);
+                GetViewport().SetInputAsHandled();
+                break;
+        }
     }
 
     private static bool HasArg(string value)
