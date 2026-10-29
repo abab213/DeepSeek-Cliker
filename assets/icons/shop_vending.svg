@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="cab" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f5563"/>
+      <stop offset="1" stop-color="#172731"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6eeaff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#2d8fb3" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="64" cy="115" rx="40" ry="8" fill="#030a10" opacity="0.5"/>
+  <g stroke="#0a141d" stroke-width="4" stroke-linejoin="round">
+    <rect x="20" y="12" width="88" height="102" rx="8" fill="url(#cab)"/>
+    <rect x="27" y="20" width="74" height="56" rx="4" fill="#0b1a23"/>
+    <rect x="31" y="24" width="66" height="48" rx="3" fill="url(#glass)"/>
+    <path d="M32 46h64M32 66h64" stroke="#46dfff" stroke-width="2" opacity="0.5"/>
+    <g fill="#f2e5c8" stroke-width="2">
+      <path d="M39 42c0-6 5-11 11-11s11 5 11 11z"/>
+      <path d="M68 42c0-6 5-11 11-11s11 5 11 11z"/>
+      <path d="M39 64c0-6 5-11 11-11s11 5 11 11z"/>
+      <path d="M68 64c0-6 5-11 11-11s11 5 11 11z"/>
+    </g>
+    <g fill="#ffd166" stroke="none">
+      <circle cx="43" cy="53" r="2"/><circle cx="51" cy="56" r="1.6"/><circle cx="72" cy="53" r="2"/><circle cx="80" cy="56" r="1.6"/>
+    </g>
+    <rect x="27" y="84" width="50" height="24" rx="4" fill="#0c1a23"/>
+    <rect x="32" y="89" width="40" height="5" rx="2.5" fill="#46dfff" opacity="0.65"/>
+    <rect x="32" y="99" width="27" height="4" rx="2" fill="#7f97a6" opacity="0.7"/>
+    <rect x="88" y="26" width="10" height="24" rx="3" fill="#15242d"/>
+    <rect x="90" y="31" width="6" height="12" rx="2" fill="#ffd166"/>
+    <circle cx="93" cy="61" r="5" fill="#ffd166"/>
+    <circle cx="93" cy="75" r="4" fill="#46dfff" opacity="0.8"/>
+    <path d="M88 88h12v18H88z" fill="#101d25"/>
+    <path d="M91 93h6M91 99h6" stroke="#6d8492" stroke-width="2.5"/>
+  </g>
+  <path d="M34 26h60" stroke="#b9f4ff" stroke-width="3" opacity="0.4"/>
+</svg>

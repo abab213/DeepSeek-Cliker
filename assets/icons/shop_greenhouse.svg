@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="glass2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8ff4ff" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#2b91b5" stop-opacity="0.1"/>
+    </linearGradient>
+    <linearGradient id="stalk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7fe0a8"/>
+      <stop offset="1" stop-color="#27795c"/>
+    </linearGradient>
+    <radialGradient id="glow2" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#5ce9ff" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#5ce9ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="64" cy="58" r="58" fill="url(#glow2)"/>
+  <ellipse cx="64" cy="116" rx="46" ry="8" fill="#030a10" opacity="0.5"/>
+  <g stroke="#09141c" stroke-width="4" stroke-linejoin="round">
+    <path d="M18 104h92l-6-22H24z" fill="#30464a"/>
+    <path d="M28 82c0-32 16-58 36-58s36 26 36 58z" fill="url(#glass2)"/>
+    <path d="M64 24v58M28 82h72M40 46c8 8 16 12 24 12M88 46c-8 8-16 12-24 12" fill="none" stroke="#8fe7f2" stroke-width="3" opacity="0.55"/>
+    <path d="M24 82h80" stroke="#7ccbd8" stroke-width="4"/>
+    <path d="M48 104V78c0-13 7-21 16-21s16 8 16 21v26" fill="#12302c" opacity="0.8"/>
+    <g fill="none" stroke="url(#stalk)" stroke-width="4" stroke-linecap="round">
+      <path d="M54 102c0-14-3-23-8-30M63 102c0-18 0-29 2-38M73 102c0-12 3-19 8-25"/>
+      <path d="M49 80c-7 0-12-4-15-11 8-2 13 2 15 11zM68 70c8-1 13-6 15-14-9 0-14 5-15 14zM79 86c7 1 12-2 16-8-8-3-13 0-16 8z"/>
+    </g>
+    <g fill="#ffd166" stroke="none">
+      <ellipse cx="42" cy="66" rx="3" ry="5" transform="rotate(-28 42 66)"/>
+      <ellipse cx="62" cy="54" rx="3" ry="5" transform="rotate(18 62 54)"/>
+      <ellipse cx="82" cy="62" rx="3" ry="5" transform="rotate(-20 82 62)"/>
+      <ellipse cx="52" cy="92" rx="2.5" ry="4" transform="rotate(24 52 92)"/>
+      <ellipse cx="74" cy="86" rx="2.5" ry="4" transform="rotate(-16 74 86)"/>
+    </g>
+  </g>
+  <path d="M38 32c6-10 15-17 26-21" fill="none" stroke="#d9fbff" stroke-width="3" opacity="0.4"/>
+</svg>
