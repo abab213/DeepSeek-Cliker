@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dre6k6q1ol7b2"
-path="res://.godot/imported/zombie_runner.svg-29da0f317b7449abe49ca860f8897cf7.ctex"
+uid="uid://4pi64lebvrfq"
+path="res://.godot/imported/iron_basin_hero_full.jpg-f697c318b39cb4d7277a7a0213b73419.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/zombie_runner.svg"
-dest_files=["res://.godot/imported/zombie_runner.svg-29da0f317b7449abe49ca860f8897cf7.ctex"]
+source_file="res://assets/art/characters/iron_basin_hero_full.jpg"
+dest_files=["res://.godot/imported/iron_basin_hero_full.jpg-f697c318b39cb4d7277a7a0213b73419.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

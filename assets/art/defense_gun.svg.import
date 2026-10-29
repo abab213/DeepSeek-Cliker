@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bs8movradg727"
-path="res://.godot/imported/battle_fg.svg-06ea9f4d660120639de2f76c557f0e4a.ctex"
+uid="uid://dqy4er63p2xjd"
+path="res://.godot/imported/defense_gun.svg-6648a89402d132f8871c67bb427ae4a0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/battle_fg.svg"
-dest_files=["res://.godot/imported/battle_fg.svg-06ea9f4d660120639de2f76c557f0e4a.ctex"]
+source_file="res://assets/art/defense_gun.svg"
+dest_files=["res://.godot/imported/defense_gun.svg-6648a89402d132f8871c67bb427ae4a0.ctex"]
 
 [params]
 

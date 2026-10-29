@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dbouotwkbae1q"
-path="res://.godot/imported/zombie_brute.svg-6ebd610d1805dac062efa3c0cfc25d65.ctex"
+uid="uid://jtosswtb1wex"
+path="res://.godot/imported/lane_holo.svg-082c22d5439aa0674922e46d4676c48b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/zombie_brute.svg"
-dest_files=["res://.godot/imported/zombie_brute.svg-6ebd610d1805dac062efa3c0cfc25d65.ctex"]
+source_file="res://assets/art/lane_holo.svg"
+dest_files=["res://.godot/imported/lane_holo.svg-082c22d5439aa0674922e46d4676c48b.ctex"]
 
 [params]
 

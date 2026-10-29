@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b41777f31ujam"
-path="res://.godot/imported/battle_bg.svg-55b030749434634285623975c6396332.ctex"
+uid="uid://dyoi6vlr21din"
+path="res://.godot/imported/zombie_front_runner.svg-845ebecf1eef9be0cd6e6788340a5426.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/battle_bg.svg"
-dest_files=["res://.godot/imported/battle_bg.svg-55b030749434634285623975c6396332.ctex"]
+source_file="res://assets/art/zombie_front_runner.svg"
+dest_files=["res://.godot/imported/zombie_front_runner.svg-845ebecf1eef9be0cd6e6788340a5426.ctex"]
 
 [params]
 
