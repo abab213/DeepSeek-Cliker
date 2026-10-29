@@ -1,13 +1,15 @@
-using Godot;
+﻿using Godot;
 using System.Collections.Generic;
 
 public static class AudioManager
 {
     private static readonly Dictionary<string, AudioStream> Streams = new();
     private static readonly List<AudioStreamPlayer> Players = new();
+    private static AudioStreamPlayer? _music;
     private static int _cursor;
 
     public static bool Enabled { get; private set; } = true;
+    public static bool MusicEnabled { get; private set; } = true;
 
     public static void Init(Node host)
     {
@@ -32,6 +34,43 @@ public static class AudioManager
             host.AddChild(player);
             Players.Add(player);
         }
+
+        _music = new AudioStreamPlayer
+        {
+            Bus = "Master",
+            ProcessMode = Node.ProcessModeEnum.Always,
+            VolumeDb = -11f,
+        };
+        host.AddChild(_music);
+
+        var bgm = GD.Load<AudioStream>("res://assets/audio/bgm.wav");
+        if (bgm is AudioStreamWav wav)
+        {
+            wav.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
+            wav.LoopBegin = 0;
+            wav.LoopEnd = wav.Data.Length / 2;
+        }
+
+        _music.Stream = bgm;
+        if (MusicEnabled)
+            _music.Play();
+    }
+
+    public static void SetMusicEnabled(bool enabled)
+    {
+        MusicEnabled = enabled;
+        if (_music == null)
+            return;
+
+        if (enabled && !_music.Playing)
+            _music.Play();
+        else if (!enabled)
+            _music.Stop();
+    }
+
+    public static void StopMusic()
+    {
+        _music?.Stop();
     }
 
     public static void SetEnabled(bool enabled)
@@ -70,3 +109,4 @@ public static class AudioManager
         player.Play();
     }
 }
+

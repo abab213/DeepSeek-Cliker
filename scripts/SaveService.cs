@@ -18,6 +18,7 @@ public sealed class SaveData
     public bool AutoSave { get; set; } = true;
     public bool EffectsEnabled { get; set; } = true;
     public bool AudioEnabled { get; set; } = true;
+    public bool MusicEnabled { get; set; } = true;
 }
 
 public static class SaveService

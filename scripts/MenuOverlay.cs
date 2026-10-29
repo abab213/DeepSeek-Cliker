@@ -11,6 +11,7 @@ public partial class MenuOverlay : Control
     private Button _autoButton = null!;
     private Button _effectsButton = null!;
     private Button _audioButton = null!;
+    private Button _musicButton = null!;
     private Button _clearButton = null!;
     private bool _confirmClear;
 
@@ -133,6 +134,7 @@ public partial class MenuOverlay : Control
         box.AddChild(SettingRow("自动保存", "每 30 秒自动写入进度", out _autoButton, ToggleAutoSave));
         box.AddChild(SettingRow("战斗特效", "曳光弹、粒子和命中闪光", out _effectsButton, ToggleEffects));
         box.AddChild(SettingRow("音效", "点击、射击、购买与警报", out _audioButton, ToggleAudio));
+        box.AddChild(SettingRow("背景音乐", "废土氛围循环 BGM", out _musicButton, ToggleMusic));
 
         box.AddChild(UiKit.HLine(UiKit.Alpha(UiKit.Cyan, 0.1f), 1));
         box.AddChild(SecondaryButton("保存进度", () => SaveNow()));
@@ -181,6 +183,7 @@ public partial class MenuOverlay : Control
         ApplyToggle(_autoButton, _state.AutoSave);
         ApplyToggle(_effectsButton, _state.EffectsEnabled);
         ApplyToggle(_audioButton, _state.AudioEnabled);
+        ApplyToggle(_musicButton, _state.MusicEnabled);
     }
 
     private void ToggleAutoSave()
@@ -205,6 +208,15 @@ public partial class MenuOverlay : Control
         AudioManager.SetEnabled(_state.AudioEnabled);
         RefreshSettings();
         _settingsStatus.Text = _state.AudioEnabled ? "音效已开启" : "音效已关闭";
+        _settingsStatus.AddThemeColorOverride("font_color", UiKit.Alpha(UiKit.Green, 0.85f));
+    }
+
+    private void ToggleMusic()
+    {
+        _state.MusicEnabled = !_state.MusicEnabled;
+        AudioManager.SetMusicEnabled(_state.MusicEnabled);
+        RefreshSettings();
+        _settingsStatus.Text = _state.MusicEnabled ? "背景音乐已开启" : "背景音乐已关闭";
         _settingsStatus.AddThemeColorOverride("font_color", UiKit.Alpha(UiKit.Green, 0.85f));
     }
 

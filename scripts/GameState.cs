@@ -108,6 +108,7 @@ public sealed class GameState
     public bool AutoSave { get; set; } = true;
     public bool EffectsEnabled { get; set; } = true;
     public bool AudioEnabled { get; set; } = true;
+    public bool MusicEnabled { get; set; } = true;
     public double OverloadTimer { get; private set; }
     public double FreezeTimer { get; private set; }
     public double Combo { get; private set; } = 1.0;
@@ -598,6 +599,7 @@ public sealed class GameState
             AutoSave = AutoSave,
             EffectsEnabled = EffectsEnabled,
             AudioEnabled = AudioEnabled,
+            MusicEnabled = MusicEnabled,
         };
     }
 
@@ -633,6 +635,7 @@ public sealed class GameState
         AutoSave = data.AutoSave;
         EffectsEnabled = data.EffectsEnabled;
         AudioEnabled = data.AudioEnabled;
+        MusicEnabled = data.MusicEnabled;
         WaveActive = false;
         WaveTimer = 5;
         GameOver = false;
