@@ -22,12 +22,16 @@ public partial class CombatField : Control
     private int _spawnLeft;
     private int _wave = 1;
     private float _spawnInterval = 1.0f;
+    private bool _bossWave;
+    private bool _bossPending;
+    private float _bossBanner;
 
     private enum ZombieType
     {
         Walker,
         Runner,
         Brute,
+        Boss,
     }
 
     private sealed class Zombie
@@ -78,6 +82,7 @@ public partial class CombatField : Control
         _time += dt;
         _muzzleFlash = Mathf.MoveToward(_muzzleFlash, 0f, dt * 9f);
         _hitFlash = Mathf.MoveToward(_hitFlash, 0f, dt * 3f);
+        _bossBanner = Mathf.Max(0f, _bossBanner - dt);
 
         UpdateEffects(dt);
 
@@ -96,17 +101,32 @@ public partial class CombatField : Control
     {
         AudioManager.Play("wave", 0.8f);
         _wave = _state.Wave;
-        _spawnLeft = 6 + _wave * 2;
-        _spawnInterval = Mathf.Max(0.42f, 0.9f - _wave * 0.04f);
-        _spawnTimer = 0.25f;
+        _bossWave = _wave % 10 == 0;
+        _bossPending = _bossWave;
+        _bossBanner = _bossWave ? 3.2f : 0f;
+        _spawnLeft = _bossWave ? 4 + _wave / 10 : WaveCount(_wave);
+        _spawnInterval = Mathf.Max(0.24f, 0.9f - _wave * 0.045f);
+        _spawnTimer = _bossWave ? 0.9f : 0.25f;
         _fireTimer = 0f;
         _zombies.Clear();
         _state.SetWave(_wave, true, 0);
+        if (_bossWave)
+            AudioManager.Play("wave", 1f);
     }
 
     private void UpdateWave(float dt)
     {
-        if (_spawnLeft > 0)
+        if (_bossPending)
+        {
+            _spawnTimer -= dt;
+            if (_spawnTimer <= 0f)
+            {
+                SpawnBoss();
+                _bossPending = false;
+                _spawnTimer = 0.9f;
+            }
+        }
+        else if (_spawnLeft > 0)
         {
             _spawnTimer -= dt;
             while (_spawnLeft > 0 && _spawnTimer <= 0f)
@@ -138,9 +158,9 @@ public partial class CombatField : Control
         if (_fireTimer <= 0f && _zombies.Count > 0)
             FireAtNearest();
 
-        if (_spawnLeft <= 0 && _zombies.Count == 0)
+        if (!_bossPending && _spawnLeft <= 0 && _zombies.Count == 0)
         {
-            _state.AddWaveBonus(30 + _wave * 10, 30 + _wave * 8);
+            _state.AddWaveBonus(30 + _wave * 12, 30 + _wave * 10);
             _state.SetWave(_wave + 1, false, 7);
             _tracers.Clear();
         }
@@ -155,9 +175,9 @@ public partial class CombatField : Control
         else if (_wave >= 2 && roll < 0.55f)
             type = ZombieType.Runner;
 
-        var baseHp = 45f + _wave * 14f;
-        var baseSpeed = 24f + _wave * 2.2f;
-        var baseDamage = 50f + _wave * 7f;
+        var baseHp = NormalHp(_wave);
+        var baseSpeed = NormalSpeed(_wave);
+        var baseDamage = NormalDamage(_wave);
 
         var zombie = new Zombie
         {
@@ -192,6 +212,33 @@ public partial class CombatField : Control
         _zombies.Add(zombie);
     }
 
+    private static int WaveCount(int wave) => Math.Min(90, 6 + wave * 2 + wave * wave / 30);
+
+    private static float NormalHp(int wave) => 45f + wave * 15f + wave * wave * 0.7f;
+
+    private static float NormalSpeed(int wave) => 24f + wave * 2.4f;
+
+    private static float NormalDamage(int wave) => 50f + wave * 7f + wave * wave * 0.08f;
+
+    private void SpawnBoss()
+    {
+        var hp = NormalHp(_wave) * (12f + _wave * 0.35f);
+        var boss = new Zombie
+        {
+            X = _rng.RandfRange(170f, 330f),
+            Y = SpawnY - 12f,
+            Hp = hp,
+            MaxHp = hp,
+            Speed = 9f + _wave * 0.3f,
+            Phase = _rng.RandfRange(0f, Mathf.Tau),
+            Scale = 2.25f,
+            Damage = (int)(NormalDamage(_wave) * 4f),
+            Type = ZombieType.Boss,
+        };
+        _zombies.Add(boss);
+        Burst(new Vector2(boss.X, boss.Y), UiKit.Red, 24);
+    }
+
     private void FireAtNearest()
     {
         Zombie? target = null;
@@ -221,16 +268,24 @@ public partial class CombatField : Control
         }
 
         var damage = (float)_state.GunDamage;
-        if (target.Type == ZombieType.Brute)
+        if (target.Type is ZombieType.Brute or ZombieType.Boss)
             damage *= (float)_state.BruteDamageMultiplier;
         target.Hp -= damage;
 
         if (target.Hp <= 0f)
         {
             _zombies.Remove(target);
-            AudioManager.Play("hit", 0.65f);
-            Burst(hit, new Color("59d68a"), 7);
-            _state.AddKill(8 + _wave * 3, 2 + _wave * 0.6);
+            AudioManager.Play("hit", target.Type == ZombieType.Boss ? 1f : 0.65f);
+            if (target.Type == ZombieType.Boss)
+            {
+                Burst(hit, UiKit.Gold, 28);
+                _state.AddKill(300 + _wave * 50, 120 + _wave * 25);
+            }
+            else
+            {
+                Burst(hit, new Color("59d68a"), 7);
+                _state.AddKill(8 + _wave * 4, 2 + _wave * 0.8);
+            }
         }
         else
         {
@@ -282,6 +337,7 @@ public partial class CombatField : Control
     public override void _Draw()
     {
         DrawSpawnLine();
+        DrawBossHud();
 
         var sorted = new List<Zombie>(_zombies);
         sorted.Sort((a, b) => a.Y.CompareTo(b.Y));
@@ -312,6 +368,48 @@ public partial class CombatField : Control
             DrawRect(new Rect2(0, 0, Size.X, Size.Y), UiKit.Alpha(UiKit.Red, 0.1f * _hitFlash));
     }
 
+    private void DrawBossHud()
+    {
+        Zombie? boss = null;
+        foreach (var zombie in _zombies)
+        {
+            if (zombie.Type == ZombieType.Boss)
+            {
+                boss = zombie;
+                break;
+            }
+        }
+
+        if (boss != null)
+        {
+            const float x = 274f;
+            const float y = 18f;
+            const float w = 212f;
+            const float h = 44f;
+            DrawRect(new Rect2(x, y, w, h), new Color(0.01f, 0.02f, 0.035f, 0.9f));
+            DrawRect(new Rect2(x, y, w, 1f), UiKit.Alpha(UiKit.Red, 0.8f));
+            DrawString(UiKit.DisplayFont, new Vector2(x + 10, y + 13), "BOSS // 暴君",
+                HorizontalAlignment.Left, w - 20, 8, UiKit.Gold);
+
+            var ratio = Mathf.Clamp(boss.Hp / boss.MaxHp, 0f, 1f);
+            var bar = new Rect2(x + 10, y + 20, w - 20, 4);
+            DrawRect(bar, new Color(0, 0, 0, 0.72f));
+            DrawRect(new Rect2(bar.Position, new Vector2(bar.Size.X * ratio, bar.Size.Y)), UiKit.Red);
+            DrawString(UiKit.BodyFont, new Vector2(x + 10, y + 36),
+                $"{boss.Hp:N0} / {boss.MaxHp:N0}",
+                HorizontalAlignment.Left, w - 20, 7, UiKit.Alpha(UiKit.Text, 0.8f));
+        }
+
+        if (_bossBanner > 0f)
+        {
+            var alpha = Mathf.Clamp(_bossBanner, 0f, 1f);
+            DrawRect(new Rect2(85, 280, 330, 40), new Color(0.04f, 0.01f, 0.02f, 0.8f * alpha));
+            DrawRect(new Rect2(85, 280, 330, 1f), UiKit.Alpha(UiKit.Red, 0.8f * alpha));
+            DrawString(UiKit.BoldFont, new Vector2(85, 305), "BOSS WAVE // 暴君",
+                HorizontalAlignment.Center, 330, 11, UiKit.Alpha(UiKit.Red, alpha));
+        }
+    }
+
     private void DrawSpawnLine()
     {
         var pulse = 0.35f + 0.15f * Mathf.Sin(_time * 2.4f);
@@ -333,13 +431,17 @@ public partial class CombatField : Control
         {
             ZombieType.Runner => new Color("b3a35a"),
             ZombieType.Brute => new Color("a85a5a"),
+            ZombieType.Boss => new Color("7d2d42"),
             _ => new Color("7fa36a"),
         };
         if (_state.FreezeTimer > 0)
             bodyColor = bodyColor.Lerp(new Color("7fd8ff"), 0.45f);
         var headColor = bodyColor.Lerp(UiKit.Text, 0.3f);
-        var eyeColor = z.Type == ZombieType.Brute ? UiKit.Red : new Color("ffcb7a");
+        var eyeColor = z.Type is ZombieType.Brute or ZombieType.Boss ? UiKit.Red : new Color("ffcb7a");
         var outline = new Color(0.02f, 0.04f, 0.035f, 0.9f);
+
+        if (z.Type == ZombieType.Boss)
+            DrawCircle(new Vector2(x, feet - 24f * s), 22f * s, UiKit.Alpha(UiKit.Red, 0.09f));
 
         DrawCircle(new Vector2(x, feet + 1), 10f * s, new Color(0, 0, 0, 0.42f));
 
@@ -371,7 +473,17 @@ public partial class CombatField : Control
         DrawCircle(head + new Vector2(-3f * s, 1f), 1.4f * s, eyeColor);
         DrawCircle(head + new Vector2(3f * s, 1f), 1.4f * s, eyeColor);
 
-        var barWidth = 26f;
+        if (z.Type == ZombieType.Boss)
+        {
+            var crown = head + new Vector2(0, -10f * s);
+            var gold = UiKit.Gold;
+            DrawLine(crown + new Vector2(-8f * s, 0), crown + new Vector2(-4f * s, -6f * s), gold, 2f, true);
+            DrawLine(crown + new Vector2(-4f * s, -6f * s), crown, gold, 2f, true);
+            DrawLine(crown, crown + new Vector2(4f * s, -6f * s), gold, 2f, true);
+            DrawLine(crown + new Vector2(4f * s, -6f * s), crown + new Vector2(8f * s, 0), gold, 2f, true);
+        }
+
+        var barWidth = z.Type == ZombieType.Boss ? 62f : 26f;
         var barY = head.Y - 14f * s;
         DrawRect(new Rect2(x - barWidth * 0.5f, barY, barWidth, 3f), new Color(0.02f, 0.04f, 0.05f, 0.8f));
         var ratio = Mathf.Clamp(z.Hp / z.MaxHp, 0f, 1f);

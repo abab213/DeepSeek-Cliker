@@ -122,7 +122,7 @@ public partial class ShopPanel : PanelContainer
         shop.AddChild(BuildTabs());
         shop.AddChild(UiKit.VSpace(6));
         shop.AddChild(UiKit.Label(
-            "快捷键 1-6 购买当前分类 · Q/W/E/R/T/Y 升级安全区",
+            "A/S/D 切换分类 · 1-6 购买当前分类 · Q/W/E/R/T/Y 升级安全区",
             7, UiKit.Faint, UiKit.BodyFont));
         shop.AddChild(UiKit.VSpace(6));
 
@@ -256,24 +256,24 @@ public partial class ShopPanel : PanelContainer
     private Control BuildTabs()
     {
         var tabs = UiKit.HBox(6);
-        tabs.AddChild(BuildTab(ShopCategory.Building, "建筑", "res://assets/icons/icon_building.svg", _state.Buildings.Count));
-        tabs.AddChild(BuildTab(ShopCategory.Equipment, "战斗装备", "res://assets/icons/icon_target.svg", _state.Equipment.Count));
-        tabs.AddChild(BuildTab(ShopCategory.Tactical, "战术道具", "res://assets/icons/icon_flask.svg", _state.Tacticals.Count));
+        tabs.AddChild(BuildTab(ShopCategory.Building, "A", "建筑", "res://assets/icons/icon_building.svg", _state.Buildings.Count));
+        tabs.AddChild(BuildTab(ShopCategory.Equipment, "S", "战斗装备", "res://assets/icons/icon_target.svg", _state.Equipment.Count));
+        tabs.AddChild(BuildTab(ShopCategory.Tactical, "D", "战术道具", "res://assets/icons/icon_flask.svg", _state.Tacticals.Count));
         tabs.AddChild(UiKit.HSpace(0, true));
         return tabs;
     }
 
-    private Button BuildTab(ShopCategory category, string title, string icon, int count)
+    private Button BuildTab(ShopCategory category, string key, string title, string icon, int count)
     {
         var button = new Button
         {
-            Text = $"{title} {count:00}",
+            Text = $"{key}  {title} {count:00}",
             Icon = GD.Load<Texture2D>(icon),
             Alignment = HorizontalAlignment.Left,
             CustomMinimumSize = new Vector2(0, 26),
             FocusMode = FocusModeEnum.None,
             MouseDefaultCursorShape = CursorShape.PointingHand,
-            TooltipText = $"{title}分类",
+            TooltipText = $"{title}分类（{key}）",
         };
         button.AddThemeConstantOverride("icon_max_width", 12);
         button.AddThemeConstantOverride("h_separation", 5);

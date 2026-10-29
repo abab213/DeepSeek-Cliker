@@ -122,6 +122,9 @@ public partial class Main : Control
             _shop.ActivateFacilityShortcut(0);
         }
 
+        if (HasArg("--boss-test"))
+            _state.SetWave(10, false, 0);
+
         if (HasArg("--pause"))
             _menu.OpenPause();
         if (HasArg("--settings"))
@@ -150,6 +153,18 @@ public partial class Main : Control
 
         switch (key.Keycode)
         {
+            case Key.A:
+                _shop.ShowCategory(ShopCategory.Building);
+                GetViewport().SetInputAsHandled();
+                break;
+            case Key.S:
+                _shop.ShowCategory(ShopCategory.Equipment);
+                GetViewport().SetInputAsHandled();
+                break;
+            case Key.D:
+                _shop.ShowCategory(ShopCategory.Tactical);
+                GetViewport().SetInputAsHandled();
+                break;
             case Key.Q:
                 _shop.ActivateFacilityShortcut(0);
                 GetViewport().SetInputAsHandled();

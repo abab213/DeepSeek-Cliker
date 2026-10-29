@@ -171,15 +171,16 @@ public partial class BattlePanel : PanelContainer
         }
 
         var active = _state.WaveActive;
-        _statusTop.Text = active ? "E N G A G E D" : "S T A N D B Y";
-        _statusTop.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.7f));
-        _waveLabel.Text = $"第 {_state.Wave:00} 波";
+        var bossWave = active && _state.Wave % 10 == 0;
+        _statusTop.Text = bossWave ? "B O S S" : active ? "E N G A G E D" : "S T A N D B Y";
+        _statusTop.AddThemeColorOverride("font_color", bossWave ? UiKit.Gold : active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.7f));
+        _waveLabel.Text = bossWave ? $"第 {_state.Wave:00} 波 · BOSS" : $"第 {_state.Wave:00} 波";
         _nextLabel.Text = active ? "清剿中" : $"下一波 {_state.WaveTimer:00}";
-        _nextLabel.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
-        _spawnLabel.Text = active ? "尸潮推进" : "街道静默";
-        _spawnLabel.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
-        _spawnEn.Text = active ? "I N C O M I N G" : "S I L E N T";
-        _spawnEn.AddThemeColorOverride("font_color", active ? UiKit.Alpha(UiKit.Red, 0.8f) : UiKit.Alpha(UiKit.Cyan, 0.55f));
+        _nextLabel.AddThemeColorOverride("font_color", bossWave ? UiKit.Gold : active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
+        _spawnLabel.Text = bossWave ? "首领战" : active ? "尸潮推进" : "街道静默";
+        _spawnLabel.AddThemeColorOverride("font_color", bossWave ? UiKit.Gold : active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
+        _spawnEn.Text = bossWave ? "B O S S  W A V E" : active ? "I N C O M I N G" : "S I L E N T";
+        _spawnEn.AddThemeColorOverride("font_color", bossWave ? UiKit.Alpha(UiKit.Gold, 0.9f) : active ? UiKit.Alpha(UiKit.Red, 0.8f) : UiKit.Alpha(UiKit.Cyan, 0.55f));
     }
 
     private void BuildGameOver(Control stage)
