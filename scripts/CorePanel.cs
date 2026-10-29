@@ -10,6 +10,12 @@ public partial class CorePanel : PanelContainer
     private Label _goalName = null!;
     private Label _goalAmount = null!;
     private ProgressBar _goalBar = null!;
+    private Label _sitWaveText = null!;
+    private Label _sitWaveValue = null!;
+    private Label _sitSquadText = null!;
+    private Label _sitSquadValue = null!;
+    private Label _sitNextText = null!;
+    private Label _sitNextValue = null!;
 
     public CorePanel(GameState state)
     {
@@ -152,16 +158,16 @@ public partial class CorePanel : PanelContainer
         root.AddChild(header);
         root.AddChild(UiKit.VSpace(2));
 
-        root.AddChild(SituationRow(UiKit.Green, "第 03 波 · 间歇期", "防线静默", "dot"));
+        root.AddChild(SituationRow(UiKit.Green, "第 01 波 · 间歇期", "防线静默", "dot", out _sitWaveText, out _sitWaveValue));
         root.AddChild(UiKit.HLine(UiKit.Alpha(UiKit.Cyan, 0.06f), 1));
-        root.AddChild(SituationRow(UiKit.Green, "铁盆号 · 战位待命", "击杀 42", "fire"));
+        root.AddChild(SituationRow(UiKit.Green, "铁盆号 · 战位待命", "击杀 0", "fire", out _sitSquadText, out _sitSquadValue));
         root.AddChild(UiKit.HLine(UiKit.Alpha(UiKit.Cyan, 0.06f), 1));
-        root.AddChild(SituationRow(UiKit.Gold, "下一波", "00:42", "target"));
+        root.AddChild(SituationRow(UiKit.Gold, "下一波", "00:05", "target", out _sitNextText, out _sitNextValue));
 
         return UiKit.Pad(root, 12, 9, 12, 9);
     }
 
-    private Control SituationRow(Color color, string text, string value, string icon)
+    private Control SituationRow(Color color, string text, string value, string icon, out Label textLabel, out Label valueLabel)
     {
         var row = UiKit.HBox(6);
         if (icon == "dot")
@@ -175,9 +181,11 @@ public partial class CorePanel : PanelContainer
             row.AddChild(UiKit.Icon($"res://assets/icons/icon_{icon}.svg", 11, UiKit.Alpha(color, 0.9f)));
         }
 
-        row.AddChild(UiKit.Label(text, 10, UiKit.Alpha(UiKit.Text, 0.72f), UiKit.BodyFont));
+        textLabel = UiKit.Label(text, 10, UiKit.Alpha(UiKit.Text, 0.72f), UiKit.BodyFont);
+        row.AddChild(textLabel);
         row.AddChild(UiKit.HSpace(0, true));
-        row.AddChild(UiKit.Display(value, icon == "target" ? 11 : 10, color));
+        valueLabel = UiKit.Display(value, icon == "target" ? 11 : 10, color);
+        row.AddChild(valueLabel);
         return row;
     }
 
@@ -238,6 +246,30 @@ public partial class CorePanel : PanelContainer
 
         _critValue.Text = $"{_state.CritPercent}%";
         _comboValue.Text = $"×{_state.Combo:0.0}";
+
+        if (_state.GameOver)
+        {
+            _sitWaveText.Text = "防线失守";
+            _sitWaveValue.Text = "—";
+            _sitWaveValue.AddThemeColorOverride("font_color", UiKit.Red);
+            _sitSquadText.Text = "铁盆号 · 战位失效";
+            _sitSquadValue.Text = $"击杀 {_state.Kills}";
+            _sitNextText.Text = "重新部署";
+            _sitNextValue.Text = "待命";
+            _sitNextValue.AddThemeColorOverride("font_color", UiKit.Red);
+        }
+        else
+        {
+            var active = _state.WaveActive;
+            _sitWaveText.Text = $"第 {_state.Wave:00} 波 · {(active ? "进攻中" : "间歇期")}";
+        _sitWaveValue.Text = active ? "自动射击" : "防线静默";
+        _sitWaveValue.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Green);
+        _sitSquadText.Text = active ? "铁盆号 · 自动射击" : "铁盆号 · 战位待命";
+        _sitSquadValue.Text = $"击杀 {_state.Kills}";
+        _sitNextText.Text = active ? "战场" : "下一波";
+            _sitNextValue.Text = active ? "清剿中" : $"{_state.WaveTimer:00}";
+            _sitNextValue.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Gold);
+        }
 
         var goal = _state.NextGoal();
         var cost = Mathf.Max(1.0, goal.Cost);

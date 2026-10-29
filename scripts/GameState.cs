@@ -35,11 +35,14 @@ public sealed class GameState
     public double Rice { get; private set; } = 1280;
     public double Production { get; private set; }
     public int CombatPower { get; private set; } = 24;
-    public double Defense { get; private set; } = 780;
+    public double Defense { get; private set; } = 1000;
     public double MaxDefense { get; private set; } = 1000;
-    public int Kills { get; private set; } = 42;
-    public int Score { get; private set; } = 360;
-    public int Wave { get; private set; } = 3;
+    public int Kills { get; private set; }
+    public int Score { get; private set; }
+    public int Wave { get; private set; } = 1;
+    public bool WaveActive { get; private set; }
+    public double WaveTimer { get; private set; } = 5;
+    public bool GameOver { get; private set; }
     public double Combo { get; private set; } = 1.0;
     public int CritPercent => (int)Math.Round(CritChance * 100);
 
@@ -47,6 +50,7 @@ public sealed class GameState
 
     public event Action? Changed;
     public event Action<double, bool>? Clicked;
+    public event Action? GameEnded;
 
     public GameState()
     {
@@ -128,7 +132,13 @@ public sealed class GameState
 
     public void Tick(double delta)
     {
+        if (GameOver)
+            return;
+
         Rice += Production * delta;
+
+        if (!WaveActive && WaveTimer > 0)
+            WaveTimer = Math.Max(0, WaveTimer - delta);
 
         if (_comboTimer > 0)
         {
@@ -147,6 +157,9 @@ public sealed class GameState
 
     public void Click()
     {
+        if (GameOver)
+            return;
+
         Combo = Math.Min(ComboMax, Combo + ComboStep);
         _comboTimer = ComboWindow;
 
@@ -160,7 +173,7 @@ public sealed class GameState
 
     public bool TryBuy(int index)
     {
-        if (index < 0 || index >= Buildings.Count)
+        if (GameOver || index < 0 || index >= Buildings.Count)
             return false;
 
         var building = Buildings[index];
@@ -177,6 +190,45 @@ public sealed class GameState
     public Building NextGoal()
     {
         return Buildings.FirstOrDefault(b => Rice < b.Cost) ?? Buildings[^1];
+    }
+
+    public void SetWave(int wave, bool active, double timer)
+    {
+        Wave = Math.Max(1, wave);
+        WaveActive = active;
+        WaveTimer = Math.Max(0, timer);
+        Changed?.Invoke();
+    }
+
+    public void AddKill(int points, double rice)
+    {
+        Kills++;
+        Score += Math.Max(0, points);
+        Rice += Math.Max(0, rice);
+        Changed?.Invoke();
+    }
+
+    public void AddWaveBonus(int points, double rice)
+    {
+        Score += Math.Max(0, points);
+        Rice += Math.Max(0, rice);
+        Changed?.Invoke();
+    }
+
+    public void DamageDefense(double damage)
+    {
+        if (GameOver)
+            return;
+
+        Defense = Math.Max(0, Defense - Math.Max(0, damage));
+        if (Defense <= 0 && !GameOver)
+        {
+            GameOver = true;
+            WaveActive = false;
+            GameEnded?.Invoke();
+        }
+
+        Changed?.Invoke();
     }
 
     private void Recalculate()

@@ -5,8 +5,19 @@ public partial class BattlePanel : PanelContainer
     private const float StageWidth = 500f;
     private const float StageHeight = 752f;
 
-    public BattlePanel()
+    private readonly GameState _state;
+    private CombatField _combat = null!;
+    private Label _statusTop = null!;
+    private Label _waveLabel = null!;
+    private Label _nextLabel = null!;
+    private Label _spawnLabel = null!;
+    private Label _spawnEn = null!;
+    private Control _gameOver = null!;
+    private Label _gameOverStats = null!;
+
+    public BattlePanel(GameState state)
     {
+        _state = state;
         CustomMinimumSize = new Vector2(StageWidth, 0);
         SizeFlagsVertical = SizeFlags.ExpandFill;
         AddThemeStyleboxOverride(
@@ -21,6 +32,9 @@ public partial class BattlePanel : PanelContainer
         };
         AddChild(stage);
         BuildStage(stage);
+        _state.Changed += RefreshHud;
+        _state.GameEnded += ShowGameOver;
+        RefreshHud();
     }
 
     private void BuildStage(Control stage)
@@ -31,6 +45,10 @@ public partial class BattlePanel : PanelContainer
         AddTexture(stage, "res://assets/art/characters/fish_head.webp", new Vector2(209, 640), new Vector2(82, 96));
         AddTexture(stage, "res://assets/art/characters/fish_tail.svg", new Vector2(298, 688), new Vector2(52, 44));
 
+        _combat = new CombatField(_state);
+        _combat.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        stage.AddChild(_combat);
+
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
         fx.OffsetRight = 0;
@@ -38,6 +56,7 @@ public partial class BattlePanel : PanelContainer
         stage.AddChild(fx);
 
         BuildTopHud(stage);
+        BuildGameOver(stage);
     }
 
     private static void AddTexture(Control parent, string path, Vector2 position, Vector2 size, float alpha = 1f)
@@ -69,7 +88,7 @@ public partial class BattlePanel : PanelContainer
         stage.AddChild(bottom);
     }
 
-    private static void BuildTopHud(Control stage)
+    private void BuildTopHud(Control stage)
     {
         var panel = new PanelContainer
         {
@@ -94,7 +113,8 @@ public partial class BattlePanel : PanelContainer
         topRow.AddChild(divider);
         topRow.AddChild(UiKit.Label("S E C T O R  0 7", 7, UiKit.Alpha(UiKit.Cyan, 0.8f), UiKit.DisplayFont));
         topRow.AddChild(UiKit.HSpace(0, true));
-        topRow.AddChild(UiKit.Label("S T A N D B Y", 7, UiKit.Alpha(UiKit.Green, 0.7f), UiKit.DisplayFont));
+        _statusTop = UiKit.Label("S T A N D B Y", 7, UiKit.Alpha(UiKit.Green, 0.7f), UiKit.DisplayFont);
+        topRow.AddChild(_statusTop);
 
         var location = UiKit.HBox(5);
         location.AddChild(UiKit.Label("望京高架 · 防线 03", 10, UiKit.Alpha(UiKit.Cyan, 0.8f), UiKit.BodyFont));
@@ -103,17 +123,21 @@ public partial class BattlePanel : PanelContainer
 
         var waveRow = UiKit.HBox(6);
         waveRow.AddChild(UiKit.Icon("res://assets/icons/icon_skull.svg", 13, UiKit.Red));
-        waveRow.AddChild(UiKit.Label("第 03 波", 10, UiKit.Text, UiKit.BoldFont));
+        _waveLabel = UiKit.Label("第 01 波", 10, UiKit.Text, UiKit.BoldFont);
+        waveRow.AddChild(_waveLabel);
         waveRow.AddChild(UiKit.HSpace(0, true));
-        waveRow.AddChild(UiKit.Label("下一波 00:42", 9, UiKit.Alpha(UiKit.Red, 0.9f), UiKit.BodyFont));
+        _nextLabel = UiKit.Label("下一波 00:05", 9, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BodyFont);
+        waveRow.AddChild(_nextLabel);
 
         var spawnRow = UiKit.HBox(6);
         var calmDot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
         calmDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
         spawnRow.AddChild(calmDot);
-        spawnRow.AddChild(UiKit.Label("街道静默", 9, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BoldFont));
+        _spawnLabel = UiKit.Label("街道静默", 9, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BoldFont);
+        spawnRow.AddChild(_spawnLabel);
         spawnRow.AddChild(UiKit.HSpace(0, true));
-        spawnRow.AddChild(UiKit.Label("S I L E N T", 7, UiKit.Alpha(UiKit.Cyan, 0.55f), UiKit.DisplayFont));
+        _spawnEn = UiKit.Label("S I L E N T", 7, UiKit.Alpha(UiKit.Cyan, 0.55f), UiKit.DisplayFont);
+        spawnRow.AddChild(_spawnEn);
 
         column.AddChild(topRow);
         column.AddChild(location);
@@ -126,6 +150,85 @@ public partial class BattlePanel : PanelContainer
 
         panel.AddChild(UiKit.Pad(column, 11, 9, 11, 9));
         stage.AddChild(panel);
+    }
+
+    private void RefreshHud()
+    {
+        if (_waveLabel == null)
+            return;
+
+        if (_state.GameOver)
+        {
+            _statusTop.Text = "L O S T";
+            _statusTop.AddThemeColorOverride("font_color", UiKit.Red);
+            _nextLabel.Text = "—";
+            _nextLabel.AddThemeColorOverride("font_color", UiKit.Red);
+            _spawnLabel.Text = "防线失守";
+            _spawnLabel.AddThemeColorOverride("font_color", UiKit.Red);
+            _spawnEn.Text = "L I N E  L O S T";
+            _spawnEn.AddThemeColorOverride("font_color", UiKit.Red);
+            return;
+        }
+
+        var active = _state.WaveActive;
+        _statusTop.Text = active ? "E N G A G E D" : "S T A N D B Y";
+        _statusTop.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.7f));
+        _waveLabel.Text = $"第 {_state.Wave:00} 波";
+        _nextLabel.Text = active ? "清剿中" : $"下一波 {_state.WaveTimer:00}";
+        _nextLabel.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
+        _spawnLabel.Text = active ? "尸潮推进" : "街道静默";
+        _spawnLabel.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
+        _spawnEn.Text = active ? "I N C O M I N G" : "S I L E N T";
+        _spawnEn.AddThemeColorOverride("font_color", active ? UiKit.Alpha(UiKit.Red, 0.8f) : UiKit.Alpha(UiKit.Cyan, 0.55f));
+    }
+
+    private void BuildGameOver(Control stage)
+    {
+        var overlay = new Control
+        {
+            Visible = false,
+            MouseFilter = MouseFilterEnum.Stop,
+        };
+        overlay.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        stage.AddChild(overlay);
+
+        var dim = new ColorRect
+        {
+            Color = new Color(0.01f, 0.02f, 0.04f, 0.78f),
+            MouseFilter = MouseFilterEnum.Stop,
+        };
+        dim.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        overlay.AddChild(dim);
+
+        var center = new CenterContainer();
+        center.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        overlay.AddChild(center);
+
+        var box = UiKit.VBox(9);
+        box.Alignment = BoxContainer.AlignmentMode.Center;
+        box.AddChild(UiKit.Label("防线失守", 28, UiKit.Red, UiKit.BoldFont));
+        box.AddChild(UiKit.Label("D E F E N S E  L I N E  L O S T", 8, UiKit.Alpha(UiKit.Red, 0.65f), UiKit.DisplayFont));
+        _gameOverStats = UiKit.Label("", 10, UiKit.Muted, UiKit.BodyFont);
+        box.AddChild(_gameOverStats);
+
+        var restart = UiKit.Button("重新部署", UiKit.Red, UiKit.Alpha(UiKit.Red, 0.7f), UiKit.Text, 10);
+        restart.CustomMinimumSize = new Vector2(140, 34);
+        restart.Pressed += () => GetTree().ReloadCurrentScene();
+        box.AddChild(restart);
+
+        var panel = UiKit.PanelBox(
+            UiKit.Pad(box, 28, 22, 28, 22),
+            UiKit.Box(UiKit.Alpha(UiKit.BgTop, 0.94f), UiKit.Alpha(UiKit.Red, 0.5f), 14, 1, 12, new Color(0, 0, 0, 0.5f)));
+        center.AddChild(panel);
+        _gameOver = overlay;
+    }
+
+    private void ShowGameOver()
+    {
+        if (_gameOver == null)
+            return;
+        _gameOverStats.Text = $"第 {_state.Wave:00} 波 · 击杀 {_state.Kills} · 积分 {_state.Score:N0}";
+        _gameOver.Visible = true;
     }
 
 }

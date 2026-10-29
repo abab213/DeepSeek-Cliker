@@ -12,6 +12,9 @@ public partial class TopBar : PanelContainer
     private Label _defensePercent = null!;
     private ProgressBar _defenseBar = null!;
     private Label _kills = null!;
+    private Label _autoLabel = null!;
+    private Label _threatLabel = null!;
+    private Panel _threatDot = null!;
 
     public TopBar(GameState state)
     {
@@ -125,15 +128,21 @@ public partial class TopBar : PanelContainer
         row.AddChild(kills);
         row.AddChild(MakeDivider(11));
 
-        row.AddChild(SecondaryItem("res://assets/icons/icon_fire.svg", UiKit.Alpha(UiKit.Green, 0.85f), "防线待命", UiKit.Alpha(UiKit.Green, 0.9f)));
+        var auto = UiKit.HBox(4);
+        auto.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        auto.AddChild(UiKit.Icon("res://assets/icons/icon_fire.svg", 10, UiKit.Alpha(UiKit.Green, 0.85f)));
+        _autoLabel = UiKit.Label("防线待命", 8, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BodyFont);
+        auto.AddChild(_autoLabel);
+        row.AddChild(auto);
         row.AddChild(UiKit.HSpace(0, true));
 
         var threat = UiKit.HBox(5);
         threat.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        var dot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
-        dot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
-        threat.AddChild(dot);
-        threat.AddChild(UiKit.Label("威胁等级 低", 8, UiKit.Muted, UiKit.BodyFont));
+        _threatDot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
+        _threatDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
+        threat.AddChild(_threatDot);
+        _threatLabel = UiKit.Label("威胁等级 低", 8, UiKit.Muted, UiKit.BodyFont);
+        threat.AddChild(_threatLabel);
         row.AddChild(threat);
         return row;
     }
@@ -151,15 +160,26 @@ public partial class TopBar : PanelContainer
         _defenseBar.Value = ratio * 100;
         _defensePercent.Text = $"{ratio * 100:0}%";
         _kills.Text = $"击杀 {_state.Kills}";
-    }
 
-    private static Control SecondaryItem(string icon, Color tint, string text, Color color)
-    {
-        var item = UiKit.HBox(4);
-        item.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        item.AddChild(UiKit.Icon(icon, 10, tint));
-        item.AddChild(UiKit.Label(text, 8, color, UiKit.BodyFont));
-        return item;
+        if (_state.GameOver)
+        {
+            _autoLabel.Text = "防线失守";
+            _autoLabel.AddThemeColorOverride("font_color", UiKit.Red);
+            _threatLabel.Text = "威胁等级 极高";
+            _threatLabel.AddThemeColorOverride("font_color", UiKit.Red);
+            _threatDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Red, UiKit.Red, 3, 0));
+            return;
+        }
+
+        var active = _state.WaveActive;
+        _autoLabel.Text = active ? "自动射击" : "防线待命";
+        _autoLabel.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
+
+        var threat = !active ? "低" : _state.Wave >= 5 ? "高" : _state.Wave >= 3 ? "中" : "低";
+        _threatLabel.Text = $"威胁等级 {threat}";
+        var threatColor = threat == "高" ? UiKit.Red : threat == "中" ? UiKit.Gold : UiKit.Green;
+        _threatLabel.AddThemeColorOverride("font_color", threat == "低" ? UiKit.Muted : UiKit.Alpha(threatColor, 0.9f));
+        _threatDot.AddThemeStyleboxOverride("panel", UiKit.Box(threatColor, threatColor, 3, 0));
     }
 
     private Control BuildActions()

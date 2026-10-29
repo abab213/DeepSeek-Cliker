@@ -46,7 +46,7 @@ public partial class Main : Control
         content.AddThemeConstantOverride("separation", 20);
         layout.AddChild(content);
 
-        _battle = new BattlePanel();
+        _battle = new BattlePanel(_state);
         _core = new CorePanel(_state);
         _shop = new ShopPanel(_state);
 
@@ -62,6 +62,9 @@ public partial class Main : Control
                 _state.Click();
             _state.TryBuy(0);
         }
+
+        if (HasArg("--gameover"))
+            _state.DamageDefense(5000);
 
         CaptureIfRequested();
     }
@@ -97,6 +100,12 @@ public partial class Main : Control
 
         for (int i = 0; i < 6; i++)
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        if (HasArg("--combat"))
+        {
+            for (int i = 0; i < 560; i++)
+                await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        }
 
         GD.Print($"Viewport: {GetViewport().GetVisibleRect().Size}");
         GD.Print($"Battle: {_battle.Size}  Core: {_core.Size}  Shop: {_shop.Size}");
