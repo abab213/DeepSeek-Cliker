@@ -78,6 +78,25 @@ public partial class Main : Control
         if (HasArg("--gameover"))
             _state.DamageDefense(5000);
 
+        if (HasArg("--shop-equipment"))
+            _shop.ShowCategory(ShopCategory.Equipment);
+        if (HasArg("--shop-tactical"))
+            _shop.ShowCategory(ShopCategory.Tactical);
+
+        if (HasArg("--test-equipment"))
+        {
+            _shop.ShowCategory(ShopCategory.Equipment);
+            _state.BuyEquipment(0);
+            _state.BuyEquipment(3);
+        }
+
+        if (HasArg("--test-tactical"))
+        {
+            _shop.ShowCategory(ShopCategory.Tactical);
+            _state.UseTactical(1);
+            _state.UseTactical(2);
+        }
+
         if (HasArg("--pause"))
             _menu.OpenPause();
         if (HasArg("--settings"))

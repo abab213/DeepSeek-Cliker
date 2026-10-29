@@ -119,7 +119,8 @@ public partial class CombatField : Control
         for (int i = _zombies.Count - 1; i >= 0; i--)
         {
             var zombie = _zombies[i];
-            zombie.Y += zombie.Speed * dt;
+            var slow = _state.FreezeTimer > 0 ? 0.15f : 1f;
+            zombie.Y += zombie.Speed * slow * dt;
             zombie.Phase += dt * 7f;
 
             if (zombie.Y >= DefenseLine)
@@ -201,7 +202,7 @@ public partial class CombatField : Control
         if (target == null)
             return;
 
-        _fireTimer = 0.38f;
+        _fireTimer = (float)_state.FireInterval * (_state.OverloadTimer > 0 ? 0.55f : 1f);
         var hit = new Vector2(target.X, target.Y - 38f * target.Scale);
 
         if (_state.EffectsEnabled)
@@ -216,7 +217,9 @@ public partial class CombatField : Control
             });
         }
 
-        var damage = 10f + _state.CombatPower * 1.1f;
+        var damage = (float)_state.GunDamage;
+        if (target.Type == ZombieType.Brute)
+            damage *= (float)_state.BruteDamageMultiplier;
         target.Hp -= damage;
 
         if (target.Hp <= 0f)
@@ -328,6 +331,8 @@ public partial class CombatField : Control
             ZombieType.Brute => new Color("a85a5a"),
             _ => new Color("7fa36a"),
         };
+        if (_state.FreezeTimer > 0)
+            bodyColor = bodyColor.Lerp(new Color("7fd8ff"), 0.45f);
         var headColor = bodyColor.Lerp(UiKit.Text, 0.3f);
         var eyeColor = z.Type == ZombieType.Brute ? UiKit.Red : new Color("ffcb7a");
         var outline = new Color(0.02f, 0.04f, 0.035f, 0.9f);

@@ -175,8 +175,21 @@ public partial class TopBar : PanelContainer
         }
 
         var active = _state.WaveActive;
-        _autoLabel.Text = active ? "自动射击" : "防线待命";
-        _autoLabel.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
+        if (_state.OverloadTimer > 0)
+        {
+            _autoLabel.Text = $"过载射击 {Mathf.CeilToInt((float)_state.OverloadTimer)}s";
+            _autoLabel.AddThemeColorOverride("font_color", UiKit.Gold);
+        }
+        else if (_state.FreezeTimer > 0)
+        {
+            _autoLabel.Text = $"急冻 {Mathf.CeilToInt((float)_state.FreezeTimer)}s";
+            _autoLabel.AddThemeColorOverride("font_color", UiKit.Cyan);
+        }
+        else
+        {
+            _autoLabel.Text = active ? "自动射击" : "防线待命";
+            _autoLabel.AddThemeColorOverride("font_color", active ? UiKit.Red : UiKit.Alpha(UiKit.Green, 0.9f));
+        }
 
         var threat = !active ? "低" : _state.Wave >= 5 ? "高" : _state.Wave >= 3 ? "中" : "低";
         _threatLabel.Text = $"威胁等级 {threat}";

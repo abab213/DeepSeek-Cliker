@@ -3,8 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public sealed class Building
+public enum ShopCategory
 {
+    Building,
+    Equipment,
+    Tactical,
+}
+
+public abstract class ShopEntry
+{
+    public ShopCategory Category { get; init; } = ShopCategory.Building;
     public string Name { get; init; } = "";
     public string Description { get; init; } = "";
     public string Icon { get; init; } = "";
@@ -12,12 +20,41 @@ public sealed class Building
     public string StatIcon { get; init; } = "";
     public Color Accent { get; init; }
     public double BaseCost { get; init; }
+    public double Growth { get; init; } = 1.15;
+    public int Owned { get; set; }
+    public double Cooldown { get; init; }
+    public double CooldownLeft { get; set; }
+
+    public virtual double Cost => Math.Floor(BaseCost * Math.Pow(Growth, Owned));
+}
+
+public sealed class Building : ShopEntry
+{
     public double Production { get; init; }
     public int Combat { get; init; }
-    public int Owned { get; set; }
     public bool Recommended { get; init; }
+}
 
-    public double Cost => Math.Floor(BaseCost * Math.Pow(1.15, Owned));
+public sealed class Equipment : ShopEntry
+{
+    public int MaxLevel { get; init; } = 5;
+    public int PowerBonus { get; init; }
+    public int DamageBonus { get; init; }
+    public double FireIntervalDelta { get; init; }
+    public double BruteBonus { get; init; }
+    public int DefenseBonus { get; init; }
+}
+
+public enum TacticalKind
+{
+    Repair,
+    Overload,
+    Freeze,
+}
+
+public sealed class Tactical : ShopEntry
+{
+    public TacticalKind Kind { get; init; }
 }
 
 public sealed class GameState
@@ -35,6 +72,9 @@ public sealed class GameState
     public double Rice { get; private set; } = 1280;
     public double Production { get; private set; }
     public int CombatPower { get; private set; } = 24;
+    public double GunDamage { get; private set; } = 36.4;
+    public double FireInterval { get; private set; } = 0.38;
+    public double BruteDamageMultiplier { get; private set; } = 1.0;
     public double Defense { get; private set; } = 1000;
     public double MaxDefense { get; private set; } = 1000;
     public int Kills { get; private set; }
@@ -46,10 +86,14 @@ public sealed class GameState
     public bool Paused { get; private set; }
     public bool AutoSave { get; set; } = true;
     public bool EffectsEnabled { get; set; } = true;
+    public double OverloadTimer { get; private set; }
+    public double FreezeTimer { get; private set; }
     public double Combo { get; private set; } = 1.0;
     public int CritPercent => (int)Math.Round(CritChance * 100);
 
     public List<Building> Buildings { get; } = new();
+    public List<Equipment> Equipment { get; } = new();
+    public List<Tactical> Tacticals { get; } = new();
 
     public event Action? Changed;
     public event Action<double, bool>? Clicked;
@@ -61,6 +105,7 @@ public sealed class GameState
 
         Buildings.Add(new Building
         {
+            Category = ShopCategory.Building,
             Name = "电饭煲",
             Description = "基础炊事设备，稳定产出白饭。",
             Icon = "res://assets/icons/shop_rice_cooker.svg",
@@ -74,6 +119,7 @@ public sealed class GameState
         });
         Buildings.Add(new Building
         {
+            Category = ShopCategory.Building,
             Name = "自动售饭机",
             Description = "无人值守，24 小时不打烊。",
             Icon = "res://assets/icons/shop_vending.svg",
@@ -86,6 +132,7 @@ public sealed class GameState
         });
         Buildings.Add(new Building
         {
+            Category = ShopCategory.Building,
             Name = "铁盆哨塔",
             Description = "铁盆号同款装甲，提供火力支援。",
             Icon = "res://assets/icons/shop_tower.svg",
@@ -98,6 +145,7 @@ public sealed class GameState
         });
         Buildings.Add(new Building
         {
+            Category = ShopCategory.Building,
             Name = "深潜食堂",
             Description = "让整个防区都吃上热饭。",
             Icon = "res://assets/icons/shop_canteen.svg",
@@ -109,6 +157,7 @@ public sealed class GameState
         });
         Buildings.Add(new Building
         {
+            Category = ShopCategory.Building,
             Name = "稻田温室",
             Description = "在废土上种出希望。",
             Icon = "res://assets/icons/shop_greenhouse.svg",
@@ -120,6 +169,7 @@ public sealed class GameState
         });
         Buildings.Add(new Building
         {
+            Category = ShopCategory.Building,
             Name = "服务器农场",
             Description = "用算力换米饭，废土最奢侈的农场。",
             Icon = "res://assets/icons/shop_server.svg",
@@ -128,6 +178,107 @@ public sealed class GameState
             Accent = UiKit.Green,
             BaseCost = 130000,
             Production = 120.0,
+        });
+
+        Equipment.Add(new Equipment
+        {
+            Category = ShopCategory.Equipment,
+            Name = "强化枪管",
+            Description = "加厚枪管与复进簧，提升机枪单发伤害。",
+            Icon = "res://assets/icons/icon_target.svg",
+            Stat = "+8 机枪伤害 / 级",
+            StatIcon = "res://assets/icons/icon_power.svg",
+            Accent = UiKit.Cyan,
+            BaseCost = 180,
+            Growth = 1.4,
+            MaxLevel = 5,
+            DamageBonus = 8,
+            PowerBonus = 6,
+        });
+        Equipment.Add(new Equipment
+        {
+            Category = ShopCategory.Equipment,
+            Name = "冷却组件",
+            Description = "水冷套件与轻量化枪机，缩短射击间隔。",
+            Icon = "res://assets/icons/icon_rate.svg",
+            Stat = "-0.02 秒射击间隔 / 级",
+            StatIcon = "res://assets/icons/icon_fire.svg",
+            Accent = UiKit.Green,
+            BaseCost = 220,
+            Growth = 1.4,
+            MaxLevel = 5,
+            FireIntervalDelta = 0.02,
+            PowerBonus = 4,
+        });
+        Equipment.Add(new Equipment
+        {
+            Category = ShopCategory.Equipment,
+            Name = "穿甲弹",
+            Description = "对重型僵尸造成额外伤害。",
+            Icon = "res://assets/icons/icon_power.svg",
+            Stat = "+20% 对重型伤害 / 级",
+            StatIcon = "res://assets/icons/icon_target.svg",
+            Accent = UiKit.Gold,
+            BaseCost = 280,
+            Growth = 1.45,
+            MaxLevel = 4,
+            BruteBonus = 0.2,
+            PowerBonus = 5,
+        });
+        Equipment.Add(new Equipment
+        {
+            Category = ShopCategory.Equipment,
+            Name = "防线装甲",
+            Description = "加装钢板和支撑架，提高防线上限并立即修复。",
+            Icon = "res://assets/icons/icon_shield.svg",
+            Stat = "+100 防线上限 / 级",
+            StatIcon = "res://assets/icons/icon_shield.svg",
+            Accent = UiKit.Green,
+            BaseCost = 500,
+            Growth = 1.5,
+            MaxLevel = 5,
+            DefenseBonus = 100,
+            PowerBonus = 8,
+        });
+
+        Tacticals.Add(new Tactical
+        {
+            Category = ShopCategory.Tactical,
+            Name = "防线维修",
+            Description = "紧急焊接沙袋后的支撑架，恢复防线耐久。",
+            Icon = "res://assets/icons/icon_shield.svg",
+            Stat = "+300 防线耐久 · CD 20s",
+            StatIcon = "res://assets/icons/icon_shield.svg",
+            Accent = UiKit.Green,
+            BaseCost = 400,
+            Cooldown = 20,
+            Kind = TacticalKind.Repair,
+        });
+        Tacticals.Add(new Tactical
+        {
+            Category = ShopCategory.Tactical,
+            Name = "过载射击",
+            Description = "短时间超频机枪，射速大幅提升。",
+            Icon = "res://assets/icons/icon_fire.svg",
+            Stat = "10 秒射速 +80% · CD 35s",
+            StatIcon = "res://assets/icons/icon_fire.svg",
+            Accent = UiKit.Gold,
+            BaseCost = 250,
+            Cooldown = 35,
+            Kind = TacticalKind.Overload,
+        });
+        Tacticals.Add(new Tactical
+        {
+            Category = ShopCategory.Tactical,
+            Name = "急冻手雷",
+            Description = "在街道上释放低温雾，短时间内拖慢尸潮。",
+            Icon = "res://assets/icons/icon_flask.svg",
+            Stat = "6 秒减速 85% · CD 30s",
+            StatIcon = "res://assets/icons/icon_flask.svg",
+            Accent = UiKit.Cyan,
+            BaseCost = 200,
+            Cooldown = 30,
+            Kind = TacticalKind.Freeze,
         });
 
         Recalculate();
@@ -149,6 +300,17 @@ public sealed class GameState
             if (_comboTimer <= 0)
                 Combo = 1.0;
         }
+
+        foreach (var tactical in Tacticals)
+        {
+            if (tactical.CooldownLeft > 0)
+                tactical.CooldownLeft = Math.Max(0, tactical.CooldownLeft - delta);
+        }
+
+        if (OverloadTimer > 0)
+            OverloadTimer = Math.Max(0, OverloadTimer - delta);
+        if (FreezeTimer > 0)
+            FreezeTimer = Math.Max(0, FreezeTimer - delta);
 
         _refreshTimer += delta;
         if (_refreshTimer >= 0.1)
@@ -186,6 +348,55 @@ public sealed class GameState
         Rice -= building.Cost;
         building.Owned++;
         Recalculate();
+        Changed?.Invoke();
+        return true;
+    }
+
+    public bool BuyEquipment(int index)
+    {
+        if (GameOver || Paused || index < 0 || index >= Equipment.Count)
+            return false;
+
+        var equipment = Equipment[index];
+        if (equipment.Owned >= equipment.MaxLevel || Rice < equipment.Cost)
+            return false;
+
+        Rice -= equipment.Cost;
+        equipment.Owned++;
+        if (equipment.DefenseBonus > 0)
+            Defense = Math.Min(MaxDefense + equipment.DefenseBonus, Defense + equipment.DefenseBonus);
+        Recalculate();
+        Changed?.Invoke();
+        return true;
+    }
+
+    public bool UseTactical(int index)
+    {
+        if (GameOver || Paused || index < 0 || index >= Tacticals.Count)
+            return false;
+
+        var tactical = Tacticals[index];
+        if (tactical.CooldownLeft > 0 || Rice < tactical.Cost)
+            return false;
+        if (tactical.Kind == TacticalKind.Repair && Defense >= MaxDefense)
+            return false;
+
+        Rice -= tactical.Cost;
+        tactical.CooldownLeft = tactical.Cooldown;
+
+        switch (tactical.Kind)
+        {
+            case TacticalKind.Repair:
+                Defense = Math.Min(MaxDefense, Defense + 300);
+                break;
+            case TacticalKind.Overload:
+                OverloadTimer = 10;
+                break;
+            case TacticalKind.Freeze:
+                FreezeTimer = 6;
+                break;
+        }
+
         Changed?.Invoke();
         return true;
     }
@@ -234,12 +445,6 @@ public sealed class GameState
         Changed?.Invoke();
     }
 
-    private void Recalculate()
-    {
-        Production = Buildings.Sum(b => b.Production * b.Owned);
-        CombatPower = 24 + Buildings.Sum(b => b.Combat * b.Owned);
-    }
-
     public void Pause()
     {
         if (GameOver || Paused)
@@ -260,10 +465,11 @@ public sealed class GameState
     {
         return new SaveData
         {
-            Version = 1,
+            Version = 2,
             SavedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
             Rice = Rice,
             Owned = Buildings.Select(b => b.Owned).ToArray(),
+            EquipmentOwned = Equipment.Select(e => e.Owned).ToArray(),
             Defense = Defense,
             Kills = Kills,
             Score = Score,
@@ -282,7 +488,13 @@ public sealed class GameState
                 Buildings[i].Owned = Math.Max(0, data.Owned[i]);
         }
 
-        MaxDefense = 1000;
+        if (data.EquipmentOwned != null)
+        {
+            for (int i = 0; i < Equipment.Count && i < data.EquipmentOwned.Length; i++)
+                Equipment[i].Owned = Math.Max(0, data.EquipmentOwned[i]);
+        }
+
+        MaxDefense = 1000 + Equipment.Sum(e => e.DefenseBonus * e.Owned);
         Defense = Math.Clamp(data.Defense, 0, MaxDefense);
         if (Defense <= 0)
             Defense = MaxDefense;
@@ -298,7 +510,26 @@ public sealed class GameState
         Paused = false;
         Combo = 1;
         _comboTimer = 0;
+        OverloadTimer = 0;
+        FreezeTimer = 0;
+        foreach (var tactical in Tacticals)
+            tactical.CooldownLeft = 0;
         Recalculate();
         Changed?.Invoke();
+    }
+
+    private void Recalculate()
+    {
+        Production = Buildings.Sum(b => b.Production * b.Owned);
+        CombatPower = 24 + Buildings.Sum(b => b.Combat * b.Owned) + Equipment.Sum(e => e.PowerBonus * e.Owned);
+
+        double damage = 10 + CombatPower * 1.1 + Equipment.Sum(e => e.DamageBonus * e.Owned);
+        GunDamage = damage;
+        FireInterval = Math.Max(0.14, 0.38 - Equipment.Sum(e => e.FireIntervalDelta * e.Owned));
+        BruteDamageMultiplier = 1.0 + Equipment.Sum(e => e.BruteBonus * e.Owned);
+
+        double max = 1000 + Equipment.Sum(e => e.DefenseBonus * e.Owned);
+        MaxDefense = max;
+        Defense = Math.Min(Defense, MaxDefense);
     }
 }

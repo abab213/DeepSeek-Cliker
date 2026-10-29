@@ -9,6 +9,7 @@ public sealed class SaveData
     public string SavedAt { get; set; } = "";
     public double Rice { get; set; }
     public int[] Owned { get; set; } = Array.Empty<int>();
+    public int[] EquipmentOwned { get; set; } = Array.Empty<int>();
     public double Defense { get; set; }
     public int Kills { get; set; }
     public int Score { get; set; }

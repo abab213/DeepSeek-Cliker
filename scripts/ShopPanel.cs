@@ -5,8 +5,12 @@ public partial class ShopPanel : PanelContainer
 {
     private readonly GameState _state;
     private readonly List<CardView> _cards = new();
+    private readonly Dictionary<ShopCategory, Button> _tabs = new();
+
+    private ShopCategory _category = ShopCategory.Building;
+    private VBoxContainer _list = null!;
     private Label _unlocked = null!;
-    private Label _buildingCount = null!;
+    private Label _footer = null!;
 
     public ShopPanel(GameState state)
     {
@@ -16,7 +20,16 @@ public partial class ShopPanel : PanelContainer
         SizeFlagsVertical = SizeFlags.ExpandFill;
         AddThemeStyleboxOverride("panel", UiKit.PanelStyle());
         AddChild(UiKit.Pad(BuildContent(), 20, 18, 20, 16));
+        UpdateTabs();
         _state.Changed += Refresh;
+        Refresh();
+    }
+
+    public void ShowCategory(ShopCategory category)
+    {
+        _category = category;
+        BuildCards();
+        UpdateTabs();
         Refresh();
     }
 
@@ -55,7 +68,6 @@ public partial class ShopPanel : PanelContainer
         body.AddChild(BuildShop());
         body.AddChild(BuildSafeZone());
         root.AddChild(body);
-
         return root;
     }
 
@@ -70,7 +82,7 @@ public partial class ShopPanel : PanelContainer
         head.AddChild(UiKit.Label("商店", 15, UiKit.Text, UiKit.BoldFont));
         head.AddChild(UiKit.Tag("SHOP", UiKit.Gold, 7));
         head.AddChild(UiKit.HSpace(0, true));
-        _unlocked = UiKit.Label($"已解锁 {_state.Buildings.Count} 项", 8, UiKit.Faint, UiKit.BodyFont);
+        _unlocked = UiKit.Label("", 8, UiKit.Faint, UiKit.BodyFont);
         head.AddChild(_unlocked);
         shop.AddChild(head);
         shop.AddChild(UiKit.VSpace(8));
@@ -86,20 +98,16 @@ public partial class ShopPanel : PanelContainer
             VerticalScrollMode = ScrollContainer.ScrollMode.Auto,
         };
 
-        var list = UiKit.VBox(6);
-        list.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        for (int i = 0; i < _state.Buildings.Count; i++)
-        {
-            var card = BuildCard(i);
-            _cards.Add(card);
-            list.AddChild(card.Card);
-        }
-
-        scroll.AddChild(list);
+        _list = UiKit.VBox(6);
+        _list.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        scroll.AddChild(_list);
         shop.AddChild(scroll);
 
         shop.AddChild(UiKit.VSpace(6));
-        shop.AddChild(UiKit.Label("建筑会持续产出白饭 · 价格随购买次数上涨", 8, UiKit.Faint, UiKit.BodyFont));
+        _footer = UiKit.Label("", 8, UiKit.Faint, UiKit.BodyFont);
+        shop.AddChild(_footer);
+
+        BuildCards();
         return shop;
     }
 
@@ -143,66 +151,117 @@ public partial class ShopPanel : PanelContainer
     private Control BuildTabs()
     {
         var tabs = UiKit.HBox(6);
-        _buildingCount = UiKit.Display(_state.Buildings.Count.ToString("00"), 8, UiKit.Alpha(UiKit.Cyan, 0.8f));
-        tabs.AddChild(BuildTab("res://assets/icons/icon_building.svg", "建筑", _buildingCount, true));
-        tabs.AddChild(BuildTab("res://assets/icons/icon_target.svg", "战斗装备", UiKit.Display("00", 8, UiKit.Alpha(UiKit.Faint, 0.7f)), false));
-        tabs.AddChild(BuildTab("res://assets/icons/icon_flask.svg", "战术道具", UiKit.Display("00", 8, UiKit.Alpha(UiKit.Faint, 0.7f)), false));
+        tabs.AddChild(BuildTab(ShopCategory.Building, "建筑", "res://assets/icons/icon_building.svg", _state.Buildings.Count));
+        tabs.AddChild(BuildTab(ShopCategory.Equipment, "战斗装备", "res://assets/icons/icon_target.svg", _state.Equipment.Count));
+        tabs.AddChild(BuildTab(ShopCategory.Tactical, "战术道具", "res://assets/icons/icon_flask.svg", _state.Tacticals.Count));
         tabs.AddChild(UiKit.HSpace(0, true));
         return tabs;
     }
 
-    private static Control BuildTab(string icon, string title, Label count, bool active)
+    private Button BuildTab(ShopCategory category, string title, string icon, int count)
     {
-        var group = UiKit.HBox(5);
-        group.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        group.AddChild(UiKit.Icon(icon, 12, active ? UiKit.Cyan : UiKit.Alpha(UiKit.Faint, 0.9f)));
-        group.AddChild(UiKit.Label(title, 9, active ? UiKit.Text : UiKit.Faint, active ? UiKit.BoldFont : UiKit.BodyFont));
-        group.AddChild(count);
-
-        var panel = UiKit.PanelBox(
-            UiKit.Pad(group, 8, 4, 8, 4),
-            active
-                ? UiKit.Box(UiKit.Alpha(UiKit.Cyan, 0.08f), UiKit.Alpha(UiKit.Cyan, 0.36f), 7)
-                : UiKit.Box(new Color(0, 0, 0, 0), UiKit.Alpha(UiKit.Line, 0.55f), 7));
-        panel.TooltipText = active ? $"{title}分类" : $"{title}分类暂未上架";
-        return panel;
+        var button = new Button
+        {
+            Text = $"{title} {count:00}",
+            Icon = GD.Load<Texture2D>(icon),
+            Alignment = HorizontalAlignment.Left,
+            CustomMinimumSize = new Vector2(0, 26),
+            FocusMode = FocusModeEnum.None,
+            MouseDefaultCursorShape = CursorShape.PointingHand,
+            TooltipText = $"{title}分类",
+        };
+        button.AddThemeConstantOverride("icon_max_width", 12);
+        button.AddThemeConstantOverride("h_separation", 5);
+        button.AddThemeFontOverride("font", UiKit.BoldFont);
+        button.AddThemeFontSizeOverride("font_size", 9);
+        button.Pressed += () => ShowCategory(category);
+        _tabs[category] = button;
+        return button;
     }
 
-    private CardView BuildCard(int index)
+    private void UpdateTabs()
     {
-        var item = _state.Buildings[index];
-        var border = item.Recommended ? UiKit.Alpha(UiKit.Gold, 0.34f) : UiKit.LineSoft;
+        foreach (var (category, button) in _tabs)
+        {
+            var active = category == _category;
+            button.AddThemeStyleboxOverride("normal", TabStyle(active));
+            button.AddThemeStyleboxOverride("hover", TabStyle(active, true));
+            button.AddThemeStyleboxOverride("pressed", TabStyle(true));
+            button.AddThemeColorOverride("font_color", active ? UiKit.Text : UiKit.Faint);
+            button.AddThemeColorOverride("font_hover_color", active ? UiKit.Text : UiKit.Cyan);
+            button.AddThemeColorOverride("icon_normal_color", active ? UiKit.Cyan : UiKit.Alpha(UiKit.Faint, 0.8f));
+            button.AddThemeColorOverride("icon_hover_color", UiKit.Cyan);
+        }
+    }
 
+    private static StyleBoxFlat TabStyle(bool active, bool hover = false)
+    {
+        var style = UiKit.Box(
+            active ? UiKit.Alpha(UiKit.Cyan, 0.12f) : hover ? UiKit.PanelRaised : new Color(0, 0, 0, 0),
+            active ? UiKit.Alpha(UiKit.Cyan, 0.45f) : UiKit.Alpha(UiKit.Line, 0.55f),
+            7, 1);
+        style.ContentMarginLeft = 8;
+        style.ContentMarginRight = 8;
+        style.ContentMarginTop = 4;
+        style.ContentMarginBottom = 4;
+        return style;
+    }
+
+    private IEnumerable<ShopEntry> CurrentEntries()
+    {
+        if (_category == ShopCategory.Building)
+            return _state.Buildings;
+        if (_category == ShopCategory.Equipment)
+            return _state.Equipment;
+        return _state.Tacticals;
+    }
+
+    private void BuildCards()
+    {
+        if (_list == null)
+            return;
+
+        _cards.Clear();
+        foreach (var child in _list.GetChildren())
+        {
+            _list.RemoveChild(child);
+            child.QueueFree();
+        }
+
+        int index = 0;
+        foreach (var entry in CurrentEntries())
+        {
+            var card = BuildCard(entry, index++);
+            _cards.Add(card);
+            _list.AddChild(card.Card);
+        }
+    }
+
+    private CardView BuildCard(ShopEntry entry, int index)
+    {
+        var border = entry is Building { Recommended: true } ? UiKit.Alpha(UiKit.Gold, 0.34f) : UiKit.LineSoft;
         var card = new PanelContainer
         {
             CustomMinimumSize = new Vector2(0, 72),
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
             MouseFilter = MouseFilterEnum.Stop,
-            TooltipText = $"{item.Name}：{item.Description}",
+            TooltipText = $"{entry.Name}：{entry.Description}",
         };
         card.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Alpha(UiKit.PanelDeep, 0.86f), border, 10, 1));
-        card.AddChild(UiKit.Pad(BuildCardRow(index, item, out var cost, out var owned, out var button, out var iconTile), 10, 6, 10, 6));
-        card.Modulate = Colors.White;
 
-        button.Pressed += () => _state.TryBuy(index);
-        return new CardView(index, card, cost, owned, button, item.Recommended);
-    }
-
-    private Control BuildCardRow(int index, Building item, out Label costLabel, out Label ownedLabel, out Button button, out PanelContainer iconTile)
-    {
         var row = UiKit.HBox(9);
         row.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
-        iconTile = new PanelContainer
+        var iconTile = new PanelContainer
         {
             CustomMinimumSize = new Vector2(46, 46),
             SizeFlagsVertical = SizeFlags.ShrinkCenter,
         };
         iconTile.AddThemeStyleboxOverride(
             "panel",
-            UiKit.Box(UiKit.Alpha(item.Accent, 0.055f), UiKit.Alpha(item.Accent, 0.18f), 9));
+            UiKit.Box(UiKit.Alpha(entry.Accent, 0.055f), UiKit.Alpha(entry.Accent, 0.18f), 9));
         var center = new CenterContainer();
-        center.AddChild(UiKit.Icon(item.Icon, 34));
+        center.AddChild(UiKit.Icon(entry.Icon, 34));
         iconTile.AddChild(center);
         row.AddChild(iconTile);
 
@@ -211,27 +270,28 @@ public partial class ShopPanel : PanelContainer
         text.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
         var titleLine = UiKit.HBox(6);
-        titleLine.AddChild(UiKit.Label(item.Name, 12, UiKit.Text, UiKit.BoldFont));
-        if (item.Recommended)
+        titleLine.AddChild(UiKit.Label(entry.Name, 12, UiKit.Text, UiKit.BoldFont));
+        if (entry is Building { Recommended: true })
             titleLine.AddChild(UiKit.Tag("推荐", UiKit.Gold, 7));
         titleLine.AddChild(UiKit.HSpace(0, true));
-        var ownedBox = UiKit.HBox(3);
-        ownedBox.AddChild(UiKit.Label("持有", 8, UiKit.Faint, UiKit.BodyFont));
-        ownedLabel = UiKit.Display("×" + item.Owned, 9, UiKit.Alpha(UiKit.Cyan, 0.8f));
-        ownedBox.AddChild(ownedLabel);
-        titleLine.AddChild(ownedBox);
+
+        var stateBox = UiKit.HBox(3);
+        var stateCaption = UiKit.Label(entry.Category == ShopCategory.Tactical ? "状态" : "持有", 8, UiKit.Faint, UiKit.BodyFont);
+        stateBox.AddChild(stateCaption);
+        var stateLabel = UiKit.Display(entry.Category == ShopCategory.Tactical ? "可用" : "×" + entry.Owned, 9, UiKit.Alpha(UiKit.Cyan, 0.8f));
+        stateBox.AddChild(stateLabel);
+        titleLine.AddChild(stateBox);
         text.AddChild(titleLine);
 
-        var desc = UiKit.Label(item.Description, 9, UiKit.Muted, UiKit.BodyFont);
+        var desc = UiKit.Label(entry.Description, 9, UiKit.Muted, UiKit.BodyFont);
         desc.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
         desc.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         text.AddChild(desc);
 
         var stat = UiKit.HBox(4);
-        stat.AddChild(UiKit.Icon(item.StatIcon, 10, UiKit.Alpha(item.Accent, 0.92f)));
-        stat.AddChild(UiKit.Label(item.Stat, 9, UiKit.Alpha(item.Accent, 0.96f), UiKit.BodyFont));
+        stat.AddChild(UiKit.Icon(entry.StatIcon, 10, UiKit.Alpha(entry.Accent, 0.92f)));
+        stat.AddChild(UiKit.Label(entry.Stat, 9, UiKit.Alpha(entry.Accent, 0.96f), UiKit.BodyFont));
         text.AddChild(stat);
-
         row.AddChild(text);
 
         var costBox = UiKit.VBox(3);
@@ -241,17 +301,33 @@ public partial class ShopPanel : PanelContainer
         var costLine = UiKit.HBox(3);
         costLine.Alignment = BoxContainer.AlignmentMode.End;
         costLine.AddChild(UiKit.Icon("res://assets/icons/icon_rice.svg", 10, UiKit.Alpha(UiKit.Gold, 0.9f)));
-        costLabel = UiKit.Display(item.Cost.ToString("N0"), 12, UiKit.Gold);
+        var costLabel = UiKit.Display(entry.Cost.ToString("N0"), 12, UiKit.Gold);
         costLine.AddChild(costLabel);
         costLine.AddChild(UiKit.Label("白饭", 8, UiKit.Faint, UiKit.BodyFont));
         costBox.AddChild(costLine);
 
-        button = UiKit.Button("购买", UiKit.Alpha(UiKit.Gold, 0.92f), UiKit.Gold, new Color("241a07"), 9);
+        var button = UiKit.Button("购买", UiKit.Alpha(UiKit.Gold, 0.92f), UiKit.Gold, new Color("241a07"), 9);
         button.CustomMinimumSize = new Vector2(0, 22);
+        button.Pressed += () =>
+        {
+            switch (entry.Category)
+            {
+                case ShopCategory.Building:
+                    _state.TryBuy(index);
+                    break;
+                case ShopCategory.Equipment:
+                    _state.BuyEquipment(index);
+                    break;
+                case ShopCategory.Tactical:
+                    _state.UseTactical(index);
+                    break;
+            }
+        };
         costBox.AddChild(button);
-
         row.AddChild(costBox);
-        return row;
+
+        card.AddChild(UiKit.Pad(row, 10, 6, 10, 6));
+        return new CardView(entry, card, costLabel, stateCaption, stateLabel, button);
     }
 
     private void Refresh()
@@ -259,36 +335,83 @@ public partial class ShopPanel : PanelContainer
         if (_cards.Count == 0)
             return;
 
-        _unlocked.Text = $"已解锁 {_state.Buildings.Count} 项";
-        _buildingCount.Text = _state.Buildings.Count.ToString("00");
+        _unlocked.Text = $"共 {_state.Buildings.Count + _state.Equipment.Count + _state.Tacticals.Count} 项";
+        _footer.Text = _category switch
+        {
+            ShopCategory.Building => "建筑会持续产出白饭 · 价格随购买次数上涨",
+            ShopCategory.Equipment => "战斗装备永久生效 · 价格随等级上涨",
+            _ => "战术道具消耗白饭 · 使用后进入冷却",
+        };
 
         foreach (var view in _cards)
         {
-            var item = _state.Buildings[view.Index];
-            var costText = item.Cost.ToString("N0");
-            var ownedText = "×" + item.Owned;
+            var entry = view.Entry;
+            var costText = entry.Cost.ToString("N0");
             if (view.Cost.Text != costText)
                 view.Cost.Text = costText;
-            if (view.Owned.Text != ownedText)
-                view.Owned.Text = ownedText;
 
-            var affordable = _state.Rice >= item.Cost;
-            if (view.LastAffordable == affordable)
-                continue;
+            var caption = entry.Category == ShopCategory.Tactical ? "状态" : "持有";
+            string stateText;
+            if (entry is Tactical tacticalState)
+            {
+                stateText = tacticalState.CooldownLeft > 0
+                    ? $"冷却 {Mathf.CeilToInt((float)tacticalState.CooldownLeft)}s"
+                    : tacticalState.Kind == TacticalKind.Repair && _state.Defense >= _state.MaxDefense
+                        ? "防线满"
+                        : "可用";
+            }
+            else
+            {
+                stateText = "×" + entry.Owned;
+            }
 
-            view.LastAffordable = affordable;
-            view.Card.Modulate = affordable ? Colors.White : new Color(1, 1, 1, 0.62f);
+            if (view.Caption.Text != caption)
+                view.Caption.Text = caption;
+            if (view.State.Text != stateText)
+                view.State.Text = stateText;
+
+            string buttonText;
+            bool enabled;
+            switch (entry)
+            {
+                case Tactical tactical when tactical.CooldownLeft > 0:
+                    buttonText = "冷却中";
+                    enabled = false;
+                    break;
+                case Tactical tactical when tactical.Kind == TacticalKind.Repair && _state.Defense >= _state.MaxDefense:
+                    buttonText = "防线满";
+                    enabled = false;
+                    break;
+                case Equipment equipment when equipment.Owned >= equipment.MaxLevel:
+                    buttonText = "已满级";
+                    enabled = false;
+                    break;
+                default:
+                    enabled = _state.Rice >= entry.Cost;
+                    buttonText = enabled ? (entry.Category == ShopCategory.Tactical ? "使用" : "购买") : "白饭不足";
+                    break;
+            }
+
+            if (view.Button.Text != buttonText)
+                view.Button.Text = buttonText;
+
+            var affordable = _state.Rice >= entry.Cost;
             view.Cost.AddThemeColorOverride("font_color", affordable ? UiKit.Gold : UiKit.Alpha(UiKit.Red, 0.75f));
-            ApplyButton(view.Button, affordable);
+
+            if (view.LastEnabled != enabled || view.LastAffordable != affordable)
+            {
+                view.LastEnabled = enabled;
+                view.LastAffordable = affordable;
+                view.Card.Modulate = enabled ? Colors.White : new Color(1, 1, 1, 0.68f);
+                ApplyButton(view.Button, enabled);
+            }
         }
     }
 
-    private static void ApplyButton(Button button, bool affordable)
+    private static void ApplyButton(Button button, bool enabled)
     {
-        button.Disabled = !affordable;
-        button.Text = affordable ? "购买" : "白饭不足";
-
-        if (affordable)
+        button.Disabled = !enabled;
+        if (enabled)
         {
             button.AddThemeStyleboxOverride("normal", UiKit.ButtonStyle(UiKit.Alpha(UiKit.Gold, 0.92f), UiKit.Gold));
             button.AddThemeStyleboxOverride("hover", UiKit.ButtonStyle(UiKit.Gold, UiKit.Gold));
@@ -310,19 +433,22 @@ public partial class ShopPanel : PanelContainer
 
     private sealed class CardView
     {
-        public int Index { get; }
+        public ShopEntry Entry { get; }
         public PanelContainer Card { get; }
         public Label Cost { get; }
-        public Label Owned { get; }
+        public Label Caption { get; }
+        public Label State { get; }
         public Button Button { get; }
+        public bool? LastEnabled { get; set; }
         public bool? LastAffordable { get; set; }
 
-        public CardView(int index, PanelContainer card, Label cost, Label owned, Button button, bool recommended)
+        public CardView(ShopEntry entry, PanelContainer card, Label cost, Label caption, Label state, Button button)
         {
-            Index = index;
+            Entry = entry;
             Card = card;
             Cost = cost;
-            Owned = owned;
+            Caption = caption;
+            State = state;
             Button = button;
         }
     }
