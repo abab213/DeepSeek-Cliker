@@ -32,7 +32,7 @@ public partial class BattlePanel : PanelContainer
             Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
-            Position = new Vector2(146, 186),
+            Position = new Vector2(241, 231),
             Size = new Vector2(208, 417),
             Modulate = UiKit.Alpha(UiKit.Cyan, 0.22f),
             MouseFilter = MouseFilterEnum.Ignore,
@@ -44,17 +44,16 @@ public partial class BattlePanel : PanelContainer
             Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
-            Position = new Vector2(150, 190),
+            Position = new Vector2(245, 235),
             Size = new Vector2(200, 409),
             Modulate = new Color(1.08f, 1.08f, 1.12f, 1f),
             MouseFilter = MouseFilterEnum.Ignore,
         };
         stage.AddChild(body);
-        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(195, 207), new Vector2(110, 74));
+        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(290, 252), new Vector2(110, 74));
 
-        BuildScrims(stage);
-
-        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(140, 385), new Vector2(220, 123));
+        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(80, 360), new Vector2(300, 168));
+        AddTexture(stage, "res://assets/art/sandbag_wall.svg", new Vector2(0, 500), new Vector2(500, 200));
 
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
