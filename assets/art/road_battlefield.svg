@@ -34,13 +34,13 @@
       <stop offset="1" stop-color="#ffe6a8" stop-opacity="0.1"/>
     </linearGradient>
     <linearGradient id="bagTop" x1="0" y1="0" x2="0.7" y2="1">
-      <stop offset="0" stop-color="#536046"/>
-      <stop offset="0.45" stop-color="#394534"/>
-      <stop offset="1" stop-color="#1f2a20"/>
+      <stop offset="0" stop-color="#8a8a68"/>
+      <stop offset="0.45" stop-color="#5f6248"/>
+      <stop offset="1" stop-color="#343a29"/>
     </linearGradient>
     <linearGradient id="bagFront" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2b3829"/>
-      <stop offset="1" stop-color="#101a14"/>
+      <stop offset="0" stop-color="#4b4f38"/>
+      <stop offset="1" stop-color="#20251b"/>
     </linearGradient>
   </defs>
 
@@ -139,61 +139,193 @@
   </g>
 
   <g>
-    <ellipse cx="248" cy="636" rx="286" ry="26" fill="#02070a" opacity="0.5"/>
-    <ellipse cx="230" cy="620" rx="270" ry="18" fill="#02070a" opacity="0.35"/>
-
-    <g stroke="#0b1410" stroke-width="3">
-      <g>
-        <rect x="-22" y="548" width="82" height="38" rx="19" fill="url(#bagTop)" transform="rotate(-1 19 567)"/>
-        <rect x="52" y="545" width="92" height="40" rx="20" fill="url(#bagTop)" transform="rotate(1 98 565)"/>
-        <rect x="138" y="548" width="86" height="38" rx="19" fill="url(#bagTop)" transform="rotate(-1 181 567)"/>
-        <rect x="218" y="544" width="96" height="41" rx="20" fill="url(#bagTop)" transform="rotate(1 266 564)"/>
-        <rect x="308" y="548" width="88" height="38" rx="19" fill="url(#bagTop)" transform="rotate(-1 352 567)"/>
-        <rect x="390" y="545" width="94" height="40" rx="20" fill="url(#bagTop)" transform="rotate(1 437 565)"/>
-        <rect x="472" y="548" width="52" height="38" rx="19" fill="url(#bagTop)" transform="rotate(-1 498 567)"/>
-      </g>
-      <g>
-        <rect x="-28" y="582" width="102" height="44" rx="22" fill="url(#bagTop)" transform="rotate(1 23 604)"/>
-        <rect x="64" y="580" width="108" height="45" rx="22" fill="url(#bagTop)" transform="rotate(-1 118 602)"/>
-        <rect x="160" y="582" width="104" height="44" rx="22" fill="url(#bagTop)" transform="rotate(1 212 604)"/>
-        <rect x="252" y="579" width="110" height="46" rx="23" fill="url(#bagTop)" transform="rotate(-1 307 602)"/>
-        <rect x="350" y="582" width="106" height="44" rx="22" fill="url(#bagTop)" transform="rotate(1 403 604)"/>
-        <rect x="444" y="580" width="94" height="45" rx="22" fill="url(#bagTop)" transform="rotate(-1 491 602)"/>
-      </g>
+    <ellipse cx="245" cy="636" rx="300" ry="26" fill="#02070a" opacity="0.48"/>
+    <ellipse cx="220" cy="622" rx="280" ry="18" fill="#02070a" opacity="0.32"/>
+    <path d="M-10 552h520v84H-10z" fill="#0a0f0b" opacity="0.18"/>
+    <g transform="translate(-24 552) rotate(-2.2) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 15.4 -22.9 26.9 0 27.8 C22.9 26.9 37.0 15.4 37.0 0 C21.5 -6.0 -21.5 -6.0 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -2.9 Q0 -13.0 25.2 -2.9" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 14.4 Q0 20.6 20.0 14.4" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.2 l-3.7 15.8 M7.4 7.2 l3.0 13.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 4.8 Q-37.0 16.8 -34.0 21.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.2" rx="13.3" ry="3.2" fill="#f0efcf" opacity="0.12"/>
     </g>
-
-    <g fill="url(#bagFront)" opacity="0.85">
-      <path d="M-22 584c24 8 54 8 82 0v6c-28 7-58 7-82 0z"/>
-      <path d="M52 582c28 8 62 8 92 0v6c-30 8-64 8-92 0z"/>
-      <path d="M138 584c26 8 58 8 86 0v6c-28 8-60 8-86 0z"/>
-      <path d="M218 581c30 8 64 8 96 0v6c-32 8-66 8-96 0z"/>
-      <path d="M308 584c27 8 59 8 88 0v6c-29 8-61 8-88 0z"/>
-      <path d="M390 582c29 8 62 8 94 0v6c-32 8-65 8-94 0z"/>
+    <g transform="translate(39 550) rotate(-0.8000000000000003) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 16.3 -22.9 28.6 0 29.6 C22.9 28.6 37.0 16.3 37.0 0 C21.5 -6.4 -21.5 -6.4 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -3.1 Q0 -13.8 25.2 -3.1" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 15.3 Q0 21.9 20.0 15.3" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.6 l-3.7 16.8 M7.4 7.6 l3.0 14.3" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 5.1 Q-37.0 17.8 -34.0 22.9" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.4" rx="13.3" ry="3.4" fill="#f0efcf" opacity="0.12"/>
     </g>
-
-    <g fill="none" stroke="#a6b595" stroke-width="2.5" opacity="0.16">
-      <path d="M0 560c20-5 42-5 62 0M72 558c24-4 48-3 70 2M154 560c20-4 42-3 62 1M238 557c24-4 48-3 70 2M326 560c20-4 42-3 60 1M404 558c22-3 44-2 64 2"/>
-      <path d="M-2 594c24-5 48-5 72 0M86 592c26-4 52-3 76 2M180 594c24-4 48-3 72 1M272 591c26-4 52-3 78 2M370 594c24-4 48-3 70 1M462 592c20-3 40-2 60 2"/>
-      <path d="M-20 618c30 6 60 6 88 0M62 620c32 6 64 6 96 0M172 618c30 6 60 6 88 0M268 621c32 6 64 6 96 0M372 618c30 6 60 6 88 0M466 620c24 5 48 5 70 0" opacity="0.5"/>
+    <g transform="translate(102 552) rotate(0.5999999999999996) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 15.4 -22.9 26.9 0 27.8 C22.9 26.9 37.0 15.4 37.0 0 C21.5 -6.0 -21.5 -6.0 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -2.9 Q0 -13.0 25.2 -2.9" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 14.4 Q0 20.6 20.0 14.4" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.2 l-3.7 15.8 M7.4 7.2 l3.0 13.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 4.8 Q-37.0 16.8 -34.0 21.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.2" rx="13.3" ry="3.2" fill="#f0efcf" opacity="0.12"/>
     </g>
-
-    <g fill="#d8eddc" opacity="0.09">
-      <ellipse cx="76" cy="556" rx="28" ry="5"/>
-      <ellipse cx="254" cy="552" rx="34" ry="5"/>
-      <ellipse cx="426" cy="556" rx="30" ry="5"/>
-      <ellipse cx="110" cy="588" rx="36" ry="5"/>
-      <ellipse cx="306" cy="586" rx="40" ry="5"/>
-      <ellipse cx="478" cy="588" rx="26" ry="4"/>
+    <g transform="translate(165 550) rotate(-2.2) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 16.3 -22.9 28.6 0 29.6 C22.9 28.6 37.0 16.3 37.0 0 C21.5 -6.4 -21.5 -6.4 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -3.1 Q0 -13.8 25.2 -3.1" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 15.3 Q0 21.9 20.0 15.3" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.6 l-3.7 16.8 M7.4 7.6 l3.0 14.3" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 5.1 Q-37.0 17.8 -34.0 22.9" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.4" rx="13.3" ry="3.4" fill="#f0efcf" opacity="0.12"/>
     </g>
-    <g fill="#ffd9a1" opacity="0.18">
-      <ellipse cx="148" cy="566" rx="9" ry="3"/>
-      <ellipse cx="354" cy="562" rx="7" ry="2.5"/>
-      <ellipse cx="410" cy="600" rx="8" ry="3"/>
+    <g transform="translate(228 552) rotate(-0.8000000000000003) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 15.4 -22.9 26.9 0 27.8 C22.9 26.9 37.0 15.4 37.0 0 C21.5 -6.0 -21.5 -6.0 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -2.9 Q0 -13.0 25.2 -2.9" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 14.4 Q0 20.6 20.0 14.4" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.2 l-3.7 15.8 M7.4 7.2 l3.0 13.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 4.8 Q-37.0 16.8 -34.0 21.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.2" rx="13.3" ry="3.2" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(291 550) rotate(0.5999999999999996) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 16.3 -22.9 28.6 0 29.6 C22.9 28.6 37.0 16.3 37.0 0 C21.5 -6.4 -21.5 -6.4 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -3.1 Q0 -13.8 25.2 -3.1" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 15.3 Q0 21.9 20.0 15.3" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.6 l-3.7 16.8 M7.4 7.6 l3.0 14.3" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 5.1 Q-37.0 17.8 -34.0 22.9" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.4" rx="13.3" ry="3.4" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(354 552) rotate(-2.2) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 15.4 -22.9 26.9 0 27.8 C22.9 26.9 37.0 15.4 37.0 0 C21.5 -6.0 -21.5 -6.0 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -2.9 Q0 -13.0 25.2 -2.9" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 14.4 Q0 20.6 20.0 14.4" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.2 l-3.7 15.8 M7.4 7.2 l3.0 13.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 4.8 Q-37.0 16.8 -34.0 21.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.2" rx="13.3" ry="3.2" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(417 550) rotate(-0.8000000000000003) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 16.3 -22.9 28.6 0 29.6 C22.9 28.6 37.0 16.3 37.0 0 C21.5 -6.4 -21.5 -6.4 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="15.3" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -3.1 Q0 -13.8 25.2 -3.1" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 15.3 Q0 21.9 20.0 15.3" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.6 l-3.7 16.8 M7.4 7.6 l3.0 14.3" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 5.1 Q-37.0 17.8 -34.0 22.9" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.4" rx="13.3" ry="3.4" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(480 552) rotate(0.5999999999999996) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-37.0 0 C-37.0 15.4 -22.9 26.9 0 27.8 C22.9 26.9 37.0 15.4 37.0 0 C21.5 -6.0 -21.5 -6.0 -37.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="37.0" ry="14.4" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-25.2 -2.9 Q0 -13.0 25.2 -2.9" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-20.0 14.4 Q0 20.6 20.0 14.4" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-8.9 6.2 l-3.7 15.8 M7.4 7.2 l3.0 13.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-31.1 4.8 Q-37.0 16.8 -34.0 21.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-16.3" cy="-3.2" rx="13.3" ry="3.2" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(-34 581) rotate(1.8) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="16.5" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 17.6 -24.8 30.8 0 31.9 C24.8 30.8 40.0 17.6 40.0 0 C23.2 -6.9 -23.2 -6.9 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="16.5" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.3 Q0 -14.8 27.2 -3.3" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 16.5 Q0 23.6 21.6 16.5" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.2 l-4.0 18.2 M8.0 8.2 l3.2 15.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.5 Q-40.0 19.2 -36.8 24.8" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.6" rx="14.4" ry="3.6" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(30 583) rotate(0.7) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.1" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 18.2 -24.8 31.9 0 33.1 C24.8 31.9 40.0 18.2 40.0 0 C23.2 -7.2 -23.2 -7.2 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.1" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.4 Q0 -15.4 27.2 -3.4" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 17.1 Q0 24.5 21.6 17.1" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.4 l-4.0 18.8 M8.0 8.5 l3.2 16.0" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.7 Q-40.0 19.9 -36.8 25.7" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.8" rx="14.4" ry="3.8" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(94 581) rotate(-0.40000000000000013) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.7" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 18.9 -24.8 33.0 0 34.2 C24.8 33.0 40.0 18.9 40.0 0 C23.2 -7.4 -23.2 -7.4 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.7" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.5 Q0 -15.9 27.2 -3.5" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 17.7 Q0 25.4 21.6 17.7" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.7 l-4.0 19.5 M8.0 8.8 l3.2 16.5" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.9 Q-40.0 20.6 -36.8 26.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.9" rx="14.4" ry="3.9" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(158 583) rotate(1.8) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="16.5" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 17.6 -24.8 30.8 0 31.9 C24.8 30.8 40.0 17.6 40.0 0 C23.2 -6.9 -23.2 -6.9 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="16.5" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.3 Q0 -14.8 27.2 -3.3" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 16.5 Q0 23.6 21.6 16.5" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.2 l-4.0 18.2 M8.0 8.2 l3.2 15.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.5 Q-40.0 19.2 -36.8 24.8" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.6" rx="14.4" ry="3.6" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(222 581) rotate(0.7) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.1" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 18.2 -24.8 31.9 0 33.1 C24.8 31.9 40.0 18.2 40.0 0 C23.2 -7.2 -23.2 -7.2 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.1" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.4 Q0 -15.4 27.2 -3.4" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 17.1 Q0 24.5 21.6 17.1" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.4 l-4.0 18.8 M8.0 8.5 l3.2 16.0" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.7 Q-40.0 19.9 -36.8 25.7" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.8" rx="14.4" ry="3.8" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(286 583) rotate(-0.40000000000000013) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.7" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 18.9 -24.8 33.0 0 34.2 C24.8 33.0 40.0 18.9 40.0 0 C23.2 -7.4 -23.2 -7.4 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.7" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.5 Q0 -15.9 27.2 -3.5" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 17.7 Q0 25.4 21.6 17.7" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.7 l-4.0 19.5 M8.0 8.8 l3.2 16.5" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.9 Q-40.0 20.6 -36.8 26.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.9" rx="14.4" ry="3.9" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(350 581) rotate(1.8) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="16.5" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 17.6 -24.8 30.8 0 31.9 C24.8 30.8 40.0 17.6 40.0 0 C23.2 -6.9 -23.2 -6.9 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="16.5" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.3 Q0 -14.8 27.2 -3.3" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 16.5 Q0 23.6 21.6 16.5" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.2 l-4.0 18.2 M8.0 8.2 l3.2 15.4" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.5 Q-40.0 19.2 -36.8 24.8" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.6" rx="14.4" ry="3.6" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(414 583) rotate(0.7) scale(1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.1" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 18.2 -24.8 31.9 0 33.1 C24.8 31.9 40.0 18.2 40.0 0 C23.2 -7.2 -23.2 -7.2 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.1" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.4 Q0 -15.4 27.2 -3.4" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 17.1 Q0 24.5 21.6 17.1" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.4 l-4.0 18.8 M8.0 8.5 l3.2 16.0" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.7 Q-40.0 19.9 -36.8 25.7" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.8" rx="14.4" ry="3.8" fill="#f0efcf" opacity="0.12"/>
+    </g>
+    <g transform="translate(478 581) rotate(-0.40000000000000013) scale(-1.0 1.0)">
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.7" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-40.0 0 C-40.0 18.9 -24.8 33.0 0 34.2 C24.8 33.0 40.0 18.9 40.0 0 C23.2 -7.4 -23.2 -7.4 -40.0 0 Z" fill="url(#bagFront)" stroke="#0c120d" stroke-width="2.6"/>
+      <ellipse cx="0" cy="0" rx="40.0" ry="17.7" fill="url(#bagTop)" stroke="#0c120d" stroke-width="2.6"/>
+      <path d="M-27.2 -3.5 Q0 -15.9 27.2 -3.5" fill="none" stroke="#d3d5b1" stroke-width="2" opacity="0.38"/>
+      <path d="M-21.6 17.7 Q0 25.4 21.6 17.7" fill="none" stroke="#9a9d7b" stroke-width="1.8" opacity="0.28"/>
+      <path d="M-9.6 7.7 l-4.0 19.5 M8.0 8.8 l3.2 16.5" stroke="#1a2016" stroke-width="1.8" opacity="0.35"/>
+      <path d="M-33.6 5.9 Q-40.0 20.6 -36.8 26.6" fill="none" stroke="#1a2016" stroke-width="1.6" opacity="0.28"/>
+      <ellipse cx="-17.6" cy="-3.9" rx="14.4" ry="3.9" fill="#f0efcf" opacity="0.12"/>
     </g>
   </g>
 
   <rect x="0" y="105" width="500" height="130" fill="url(#fog)" opacity="0.7"/>
-  <rect x="0" y="560" width="500" height="120" fill="url(#fog)" opacity="0.4"/>
+  <rect x="0" y="560" width="500" height="120" fill="url(#fog)" opacity="0.22"/>
 
   <g stroke="#cdefff" stroke-width="1.1" opacity="0.12">
     <path d="M20 100 6 320"/><path d="M110 100 70 400"/><path d="M210 100 180 500"/>
