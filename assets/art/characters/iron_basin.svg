@@ -1,23 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
   <defs>
     <linearGradient id="basinBody" x1="0.08" y1="0" x2="0.92" y2="1">
-      <stop offset="0" stop-color="#d7e4e5"/>
-      <stop offset="0.28" stop-color="#95a7aa"/>
-      <stop offset="0.6" stop-color="#5e7074"/>
-      <stop offset="0.84" stop-color="#35464b"/>
-      <stop offset="1" stop-color="#1b292e"/>
+      <stop offset="0" stop-color="#7f8c8a"/>
+      <stop offset="0.28" stop-color="#5f6d6b"/>
+      <stop offset="0.6" stop-color="#3d4a49"/>
+      <stop offset="0.84" stop-color="#252f2e"/>
+      <stop offset="1" stop-color="#121a1a"/>
     </linearGradient>
     <linearGradient id="basinRim" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#5e7176"/>
-      <stop offset="0.18" stop-color="#c8d8d9"/>
-      <stop offset="0.45" stop-color="#8fa1a4"/>
-      <stop offset="0.72" stop-color="#d7e4e4"/>
-      <stop offset="1" stop-color="#4f6369"/>
+      <stop offset="0" stop-color="#384445"/>
+      <stop offset="0.18" stop-color="#879794"/>
+      <stop offset="0.45" stop-color="#5d6b69"/>
+      <stop offset="0.72" stop-color="#93a29f"/>
+      <stop offset="1" stop-color="#2e393a"/>
     </linearGradient>
     <linearGradient id="basinTop" x1="0.2" y1="0" x2="0.8" y2="1">
-      <stop offset="0" stop-color="#aebfc1"/>
-      <stop offset="0.5" stop-color="#74878b"/>
-      <stop offset="1" stop-color="#3b4c51"/>
+      <stop offset="0" stop-color="#66736f"/>
+      <stop offset="0.5" stop-color="#475350"/>
+      <stop offset="1" stop-color="#232c2b"/>
     </linearGradient>
     <radialGradient id="basinGlow" cx="0.35" cy="0.25" r="0.65">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.4"/>
@@ -25,39 +25,39 @@
     </radialGradient>
   </defs>
 
-  <g stroke="#101b1f" stroke-width="4" stroke-linejoin="round">
+  <g stroke="#0b1112" stroke-width="4" stroke-linejoin="round">
     <!-- inverted basin body: shallow, wide, flat-bottomed -->
     <path d="M32 132 C32 102 72 84 160 84 C248 84 288 102 288 132 L288 138 H32 Z" fill="url(#basinBody)"/>
-    <ellipse cx="160" cy="100" rx="108" ry="30" fill="url(#basinTop)" opacity="0.75"/>
-    <ellipse cx="160" cy="100" rx="92" ry="23" fill="none" stroke="#c3d4d6" stroke-width="2.5" opacity="0.35"/>
-    <ellipse cx="160" cy="100" rx="63" ry="14" fill="none" stroke="#a8bcbe" stroke-width="2" opacity="0.28"/>
-    <ellipse cx="160" cy="100" rx="26" ry="6" fill="none" stroke="#d9e7e8" stroke-width="2" opacity="0.3"/>
-    <ellipse cx="160" cy="100" rx="8" ry="3" fill="#2b3b40" opacity="0.5"/>
+    <ellipse cx="160" cy="100" rx="108" ry="30" fill="url(#basinTop)"/>
+    <ellipse cx="160" cy="100" rx="92" ry="23" fill="none" stroke="#6f7d79" stroke-width="2.5"/>
+    <ellipse cx="160" cy="100" rx="63" ry="14" fill="none" stroke="#5a6663" stroke-width="2"/>
+    <ellipse cx="160" cy="100" rx="26" ry="6" fill="none" stroke="#7b8985" stroke-width="2"/>
+    <ellipse cx="160" cy="100" rx="8" ry="3" fill="#2b3b40"/>
 
     <!-- rolled rim -->
     <path d="M18 132 C18 154 58 166 160 166 C262 166 302 154 302 132 C302 150 262 176 160 176 C58 176 18 150 18 132 Z" fill="url(#basinRim)"/>
-    <ellipse cx="160" cy="140" rx="142" ry="22" fill="none" stroke="#d8e6e7" stroke-width="3" opacity="0.45"/>
-    <path d="M28 140 C60 158 260 158 292 140" fill="none" stroke="#e9f5f6" stroke-width="2" opacity="0.35"/>
+    <ellipse cx="160" cy="140" rx="142" ry="22" fill="none" stroke="#8b9996" stroke-width="3"/>
+    <path d="M28 140 C60 158 260 158 292 140" fill="none" stroke="#a4b2ae" stroke-width="2"/>
 
     <!-- side handles -->
     <path d="M18 116 C-2 114 -12 126 -10 142 C-8 158 6 164 22 158" fill="none" stroke="#53686d" stroke-width="8" stroke-linecap="round"/>
-    <path d="M18 116 C-2 114 -12 126 -10 142 C-8 158 6 164 22 158" fill="none" stroke="#c8d8da" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+    <path d="M18 116 C-2 114 -12 126 -10 142 C-8 158 6 164 22 158" fill="none" stroke="#8b9996" stroke-width="2.5" stroke-linecap="round"/>
     <path d="M302 116 C322 114 332 126 330 142 C328 158 314 164 298 158" fill="none" stroke="#53686d" stroke-width="8" stroke-linecap="round"/>
-    <path d="M302 116 C322 114 332 126 330 142 C328 158 314 164 298 158" fill="none" stroke="#c8d8da" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+    <path d="M302 116 C322 114 332 126 330 142 C328 158 314 164 298 158" fill="none" stroke="#8b9996" stroke-width="2.5" stroke-linecap="round"/>
 
     <!-- dents, rust, rim chips -->
-    <path d="M92 124c14 5 30 5 44 0" fill="none" stroke="#1f3035" stroke-width="3" opacity="0.45"/>
-    <path d="M206 116c10-4 20-2 28 5" fill="none" stroke="#1f3035" stroke-width="3" opacity="0.4"/>
-    <path d="M224 90c10-2 18 1 22 8" fill="none" stroke="#e6f2f3" stroke-width="2.5" opacity="0.35"/>
-    <g fill="#7a5b3f" opacity="0.55">
+    <path d="M92 124c14 5 30 5 44 0" fill="none" stroke="#1f3035" stroke-width="3"/>
+    <path d="M206 116c10-4 20-2 28 5" fill="none" stroke="#1f3035" stroke-width="3"/>
+    <path d="M224 90c10-2 18 1 22 8" fill="none" stroke="#9aa8a4" stroke-width="2.5"/>
+    <g fill="#7a5b3f">
       <ellipse cx="74" cy="112" rx="8" ry="4" transform="rotate(-18 74 112)"/>
       <ellipse cx="246" cy="146" rx="7" ry="3" transform="rotate(12 246 146)"/>
       <ellipse cx="118" cy="154" rx="5" ry="2.5" transform="rotate(-10 118 154)"/>
     </g>
-    <g fill="#26383d" opacity="0.5">
+    <g fill="#26383d">
       <circle cx="54" cy="138" r="3"/><circle cx="272" cy="124" r="2.5"/><circle cx="158" cy="166" r="2"/>
     </g>
   </g>
-
-  <ellipse cx="118" cy="96" rx="52" ry="18" fill="url(#basinGlow)" opacity="0.6"/>
 </svg>
+
+
