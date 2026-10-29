@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ha3ob7804fkc"
-path="res://.godot/imported/street_gun.svg-a9bbe003d07249e7bbe9311ca937fe5f.ctex"
+uid="uid://cx5n3mbk6yyhp"
+path="res://.godot/imported/mounted_gun.svg-b92a991c2396563c170e933b6ef92f62.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/street_gun.svg"
-dest_files=["res://.godot/imported/street_gun.svg-a9bbe003d07249e7bbe9311ca937fe5f.ctex"]
+source_file="res://assets/art/mounted_gun.svg"
+dest_files=["res://.godot/imported/mounted_gun.svg-b92a991c2396563c170e933b6ef92f62.ctex"]
 
 [params]
 

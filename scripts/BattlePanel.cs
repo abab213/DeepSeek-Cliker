@@ -27,10 +27,10 @@ public partial class BattlePanel : PanelContainer
     {
         AddTexture(stage, "res://assets/art/road_battlefield.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
 
-        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(125, 308), new Vector2(250, 140));
-        AddTexture(stage, "res://assets/art/characters/fish_head.webp", new Vector2(260, 540), new Vector2(82, 96));
-        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(280, 545), new Vector2(70, 47));
-        AddTexture(stage, "res://assets/art/characters/fish_tail.svg", new Vector2(345, 588), new Vector2(52, 44));
+        AddTexture(stage, "res://assets/art/mounted_gun.svg", new Vector2(195, 448), new Vector2(100, 155));
+        AddTexture(stage, "res://assets/art/characters/fish_head.webp", new Vector2(280, 540), new Vector2(82, 96));
+        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(300, 545), new Vector2(70, 47));
+        AddTexture(stage, "res://assets/art/characters/fish_tail.svg", new Vector2(365, 588), new Vector2(52, 44));
 
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
