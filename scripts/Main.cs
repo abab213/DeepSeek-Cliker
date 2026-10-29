@@ -97,6 +97,12 @@ public partial class Main : Control
             _state.UseTactical(2);
         }
 
+        if (HasArg("--test-facilities"))
+        {
+            _state.BuyFacility(0);
+            _state.BuyFacility(1);
+        }
+
         if (HasArg("--pause"))
             _menu.OpenPause();
         if (HasArg("--settings"))

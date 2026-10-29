@@ -5,6 +5,7 @@ public partial class ShopPanel : PanelContainer
 {
     private readonly GameState _state;
     private readonly List<CardView> _cards = new();
+    private readonly List<FacilityView> _facilityViews = new();
     private readonly Dictionary<ShopCategory, Button> _tabs = new();
 
     private ShopCategory _category = ShopCategory.Building;
@@ -120,32 +121,94 @@ public partial class ShopPanel : PanelContainer
         var head = UiKit.HBox(7);
         head.AddChild(UiKit.Icon("res://assets/icons/icon_shield.svg", 13, UiKit.Alpha(UiKit.Green, 0.9f)));
         head.AddChild(UiKit.Label("安全区", 13, UiKit.Text, UiKit.BoldFont));
-        head.AddChild(UiKit.Tag("空地", UiKit.Alpha(UiKit.Green, 0.72f), 7));
+        head.AddChild(UiKit.Tag($"设施 {_state.Facilities.Count:00}", UiKit.Alpha(UiKit.Green, 0.72f), 7));
         head.AddChild(UiKit.HSpace(0, true));
         head.AddChild(UiKit.Label("S A F E  Z O N E", 7, UiKit.Alpha(UiKit.Cyan, 0.45f), UiKit.DisplayFont));
         safe.AddChild(head);
 
-        var ground = new SafeGround
+        var row = UiKit.HBox(6);
+        row.SizeFlagsVertical = SizeFlags.ExpandFill;
+        for (int i = 0; i < _state.Facilities.Count; i++)
         {
-            CustomMinimumSize = new Vector2(0, 70),
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            SizeFlagsVertical = SizeFlags.ExpandFill,
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-
-        var center = new CenterContainer();
-        center.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        center.MouseFilter = MouseFilterEnum.Ignore;
-
-        var row = UiKit.HBox(10);
-        row.Alignment = BoxContainer.AlignmentMode.Center;
-        row.AddChild(UiKit.Icon("res://assets/icons/icon_shield.svg", 18, UiKit.Alpha(UiKit.Green, 0.28f)));
-        row.AddChild(UiKit.Label("暂无设施", 10, UiKit.Alpha(UiKit.Text, 0.62f), UiKit.BoldFont));
-        row.AddChild(UiKit.Label("· 等待部署", 8, UiKit.Faint, UiKit.BodyFont));
-        center.AddChild(row);
-        ground.AddChild(center);
-        safe.AddChild(ground);
+            var view = BuildFacilityCard(i);
+            _facilityViews.Add(view);
+            row.AddChild(view.Card);
+        }
+        safe.AddChild(row);
         return safe;
+    }
+
+    private FacilityView BuildFacilityCard(int index)
+    {
+        var facility = _state.Facilities[index];
+        var card = new PanelContainer
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            CustomMinimumSize = new Vector2(0, 72),
+            TooltipText = $"{facility.Name}：{facility.Description}",
+        };
+        card.AddThemeStyleboxOverride(
+            "panel",
+            UiKit.Box(UiKit.Alpha(UiKit.PanelDeep, 0.9f), UiKit.LineSoft, 9));
+
+        var box = UiKit.VBox(3);
+        var top = UiKit.HBox(5);
+        top.AddChild(UiKit.Icon(facility.Icon, 12, UiKit.Alpha(facility.Accent, 0.9f)));
+        top.AddChild(UiKit.Label(facility.Name, 9, UiKit.Text, UiKit.BoldFont));
+        top.AddChild(UiKit.HSpace(0, true));
+        var level = UiKit.Display($"Lv.{facility.Owned}", 8, UiKit.Alpha(UiKit.Cyan, 0.8f));
+        top.AddChild(level);
+        box.AddChild(top);
+
+        var stat = UiKit.Label(facility.Stat, 8, UiKit.Muted, UiKit.BodyFont);
+        stat.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
+        box.AddChild(stat);
+
+        var bottom = UiKit.HBox(4);
+        bottom.AddChild(UiKit.Icon("res://assets/icons/icon_rice.svg", 8, UiKit.Alpha(UiKit.Gold, 0.9f)));
+        var cost = UiKit.Display(facility.Cost.ToString("N0"), 10, UiKit.Gold);
+        bottom.AddChild(cost);
+        bottom.AddChild(UiKit.HSpace(0, true));
+        var button = UiKit.Button("升级", UiKit.Alpha(UiKit.Gold, 0.92f), UiKit.Gold, new Color("241a07"), 8);
+        button.CustomMinimumSize = new Vector2(42, 18);
+        button.Pressed += () => _state.BuyFacility(index);
+        bottom.AddChild(button);
+        box.AddChild(bottom);
+
+        card.AddChild(UiKit.Pad(box, 8, 5, 8, 5));
+        return new FacilityView(facility, card, level, cost, button);
+    }
+
+    private void RefreshFacilities()
+    {
+        foreach (var view in _facilityViews)
+        {
+            var facility = view.Facility;
+            var levelText = $"Lv.{facility.Owned}";
+            if (view.Level.Text != levelText)
+                view.Level.Text = levelText;
+
+            var costText = facility.Cost.ToString("N0");
+            if (view.Cost.Text != costText)
+                view.Cost.Text = costText;
+
+            var maxed = facility.Owned >= facility.MaxLevel;
+            var affordable = _state.Rice >= facility.Cost;
+            var buttonText = maxed ? "满级" : affordable ? "升级" : "白饭不足";
+            var enabled = !maxed && affordable;
+
+            if (view.Button.Text != buttonText)
+                view.Button.Text = buttonText;
+            view.Cost.AddThemeColorOverride("font_color", affordable ? UiKit.Gold : UiKit.Alpha(UiKit.Red, 0.75f));
+
+            if (view.LastEnabled != enabled || view.LastAffordable != affordable)
+            {
+                view.LastEnabled = enabled;
+                view.LastAffordable = affordable;
+                view.Card.Modulate = enabled ? Colors.White : new Color(1, 1, 1, 0.68f);
+                ApplyButton(view.Button, enabled);
+            }
+        }
     }
 
     private Control BuildTabs()
@@ -406,6 +469,8 @@ public partial class ShopPanel : PanelContainer
                 ApplyButton(view.Button, enabled);
             }
         }
+
+        RefreshFacilities();
     }
 
     private static void ApplyButton(Button button, bool enabled)
@@ -452,43 +517,24 @@ public partial class ShopPanel : PanelContainer
             Button = button;
         }
     }
-}
 
-public partial class SafeGround : Control
-{
-    public override void _Draw()
+    private sealed class FacilityView
     {
-        var w = Size.X;
-        var h = Size.Y;
-        var rect = new Rect2(1, 1, Mathf.Max(0, w - 2), Mathf.Max(0, h - 2));
-        DrawRect(rect, new Color(0.015f, 0.035f, 0.05f, 0.52f));
+        public Facility Facility { get; }
+        public PanelContainer Card { get; }
+        public Label Level { get; }
+        public Label Cost { get; }
+        public Button Button { get; }
+        public bool? LastEnabled { get; set; }
+        public bool? LastAffordable { get; set; }
 
-        var grid = new Color(0.24f, 0.7f, 0.75f, 0.045f);
-        for (float x = 0; x < w; x += 22)
-            DrawLine(new Vector2(x, 0), new Vector2(x, h), grid, 1);
-        for (float y = 0; y < h; y += 22)
-            DrawLine(new Vector2(0, y), new Vector2(w, y), grid, 1);
-
-        var line = new Color(0.28f, 0.85f, 0.85f, 0.28f);
-        for (float x = 4; x < w; x += 14)
+        public FacilityView(Facility facility, PanelContainer card, Label level, Label cost, Button button)
         {
-            DrawLine(new Vector2(x, 1), new Vector2(Mathf.Min(x + 7, w), 1), line, 1);
-            DrawLine(new Vector2(x, h - 1), new Vector2(Mathf.Min(x + 7, w), h - 1), line, 1);
+            Facility = facility;
+            Card = card;
+            Level = level;
+            Cost = cost;
+            Button = button;
         }
-        for (float y = 4; y < h; y += 14)
-        {
-            DrawLine(new Vector2(1, y), new Vector2(1, Mathf.Min(y + 7, h)), line, 1);
-            DrawLine(new Vector2(w - 1, y), new Vector2(w - 1, Mathf.Min(y + 7, h)), line, 1);
-        }
-
-        var corner = new Color(0.35f, 0.95f, 1f, 0.55f);
-        DrawLine(new Vector2(0, 16), new Vector2(0, 0), corner, 2);
-        DrawLine(new Vector2(0, 0), new Vector2(16, 0), corner, 2);
-        DrawLine(new Vector2(w - 16, 0), new Vector2(w, 0), corner, 2);
-        DrawLine(new Vector2(w, 0), new Vector2(w, 16), corner, 2);
-        DrawLine(new Vector2(0, h - 16), new Vector2(0, h), corner, 2);
-        DrawLine(new Vector2(0, h), new Vector2(16, h), corner, 2);
-        DrawLine(new Vector2(w - 16, h), new Vector2(w, h), corner, 2);
-        DrawLine(new Vector2(w, h), new Vector2(w, h - 16), corner, 2);
     }
 }

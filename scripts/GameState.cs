@@ -45,6 +45,24 @@ public sealed class Equipment : ShopEntry
     public int DefenseBonus { get; init; }
 }
 
+public sealed class Facility
+{
+    public string Name { get; init; } = "";
+    public string Description { get; init; } = "";
+    public string Icon { get; init; } = "";
+    public string Stat { get; init; } = "";
+    public Color Accent { get; init; }
+    public double BaseCost { get; init; }
+    public double Growth { get; init; } = 1.5;
+    public int MaxLevel { get; init; } = 5;
+    public int Owned { get; set; }
+    public double DefenseRegen { get; init; }
+    public double CooldownReduction { get; init; }
+    public int ClickBonus { get; init; }
+
+    public double Cost => Math.Floor(BaseCost * Math.Pow(Growth, Owned));
+}
+
 public enum TacticalKind
 {
     Repair,
@@ -90,10 +108,14 @@ public sealed class GameState
     public double FreezeTimer { get; private set; }
     public double Combo { get; private set; } = 1.0;
     public int CritPercent => (int)Math.Round(CritChance * 100);
+    public double ClickValue => ClickBase + Facilities.Sum(f => f.ClickBonus * f.Owned);
+    public double DefenseRegen => Facilities.Sum(f => f.DefenseRegen * f.Owned);
+    public double TacticalCooldownMultiplier => Math.Max(0.5, 1.0 - Facilities.Sum(f => f.CooldownReduction * f.Owned));
 
     public List<Building> Buildings { get; } = new();
     public List<Equipment> Equipment { get; } = new();
     public List<Tactical> Tacticals { get; } = new();
+    public List<Facility> Facilities { get; } = new();
 
     public event Action? Changed;
     public event Action<double, bool>? Clicked;
@@ -267,6 +289,40 @@ public sealed class GameState
             Cooldown = 35,
             Kind = TacticalKind.Overload,
         });
+        Facilities.Add(new Facility
+        {
+            Name = "医疗站",
+            Description = "持续修复防线，争取更多清剿时间。",
+            Icon = "res://assets/icons/icon_shield.svg",
+            Stat = "每级 +2 防线/秒",
+            Accent = UiKit.Green,
+            BaseCost = 600,
+            MaxLevel = 5,
+            DefenseRegen = 2,
+        });
+        Facilities.Add(new Facility
+        {
+            Name = "战术电台",
+            Description = "协调战术支援，缩短所有战术道具冷却。",
+            Icon = "res://assets/icons/icon_rate.svg",
+            Stat = "每级 -5% 道具冷却",
+            Accent = UiKit.Cyan,
+            BaseCost = 450,
+            MaxLevel = 3,
+            CooldownReduction = 0.05,
+        });
+        Facilities.Add(new Facility
+        {
+            Name = "训练场",
+            Description = "让铁盆号保持手感，提高每次点击的白饭收益。",
+            Icon = "res://assets/icons/icon_target.svg",
+            Stat = "每级 +1 点击白饭",
+            Accent = UiKit.Gold,
+            BaseCost = 700,
+            MaxLevel = 5,
+            ClickBonus = 1,
+        });
+
         Tacticals.Add(new Tactical
         {
             Category = ShopCategory.Tactical,
@@ -312,6 +368,9 @@ public sealed class GameState
         if (FreezeTimer > 0)
             FreezeTimer = Math.Max(0, FreezeTimer - delta);
 
+        if (DefenseRegen > 0 && Defense < MaxDefense)
+            Defense = Math.Min(MaxDefense, Defense + DefenseRegen * delta);
+
         _refreshTimer += delta;
         if (_refreshTimer >= 0.1)
         {
@@ -329,7 +388,7 @@ public sealed class GameState
         _comboTimer = ComboWindow;
 
         bool crit = _rng.Randf() < CritChance;
-        double gain = ClickBase * Combo * (crit ? 2.0 : 1.0);
+        double gain = ClickValue * Combo * (crit ? 2.0 : 1.0);
         Rice += gain;
 
         Clicked?.Invoke(gain, crit);
@@ -370,6 +429,21 @@ public sealed class GameState
         return true;
     }
 
+    public bool BuyFacility(int index)
+    {
+        if (GameOver || Paused || index < 0 || index >= Facilities.Count)
+            return false;
+
+        var facility = Facilities[index];
+        if (facility.Owned >= facility.MaxLevel || Rice < facility.Cost)
+            return false;
+
+        Rice -= facility.Cost;
+        facility.Owned++;
+        Changed?.Invoke();
+        return true;
+    }
+
     public bool UseTactical(int index)
     {
         if (GameOver || Paused || index < 0 || index >= Tacticals.Count)
@@ -382,7 +456,7 @@ public sealed class GameState
             return false;
 
         Rice -= tactical.Cost;
-        tactical.CooldownLeft = tactical.Cooldown;
+        tactical.CooldownLeft = tactical.Cooldown * TacticalCooldownMultiplier;
 
         switch (tactical.Kind)
         {
@@ -470,6 +544,7 @@ public sealed class GameState
             Rice = Rice,
             Owned = Buildings.Select(b => b.Owned).ToArray(),
             EquipmentOwned = Equipment.Select(e => e.Owned).ToArray(),
+            FacilityOwned = Facilities.Select(f => f.Owned).ToArray(),
             Defense = Defense,
             Kills = Kills,
             Score = Score,
@@ -492,6 +567,12 @@ public sealed class GameState
         {
             for (int i = 0; i < Equipment.Count && i < data.EquipmentOwned.Length; i++)
                 Equipment[i].Owned = Math.Max(0, data.EquipmentOwned[i]);
+        }
+
+        if (data.FacilityOwned != null)
+        {
+            for (int i = 0; i < Facilities.Count && i < data.FacilityOwned.Length; i++)
+                Facilities[i].Owned = Math.Max(0, data.FacilityOwned[i]);
         }
 
         MaxDefense = 1000 + Equipment.Sum(e => e.DefenseBonus * e.Owned);
