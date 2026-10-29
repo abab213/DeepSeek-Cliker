@@ -27,6 +27,11 @@ public partial class BattlePanel : PanelContainer
     {
         AddTexture(stage, "res://assets/art/road_battlefield.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
 
+        AddTexture(stage, "res://assets/art/characters/fish_head.webp", new Vector2(246, 350), new Vector2(108, 127));
+        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(271, 355), new Vector2(90, 60));
+        AddTexture(stage, "res://assets/art/characters/fish_tail.svg", new Vector2(360, 482), new Vector2(66, 56));
+        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(125, 430), new Vector2(250, 140));
+
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
         fx.OffsetRight = 0;
@@ -96,7 +101,7 @@ public partial class BattlePanel : PanelContainer
         var location = UiKit.HBox(5);
         location.AddChild(UiKit.Label("望京高架 · 防线 03", 10, UiKit.Alpha(UiKit.Cyan, 0.8f), UiKit.BodyFont));
         location.AddChild(UiKit.HSpace(0, true));
-        location.AddChild(UiKit.Label("待命", 9, UiKit.Alpha(UiKit.Green, 0.75f), UiKit.BodyFont));
+        location.AddChild(UiKit.Label("铁盆号", 9, UiKit.Alpha(UiKit.Text, 0.7f), UiKit.BodyFont));
 
         var waveRow = UiKit.HBox(6);
         waveRow.AddChild(UiKit.Icon("res://assets/icons/icon_skull.svg", 13, UiKit.Red));
