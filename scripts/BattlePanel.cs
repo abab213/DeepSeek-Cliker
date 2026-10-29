@@ -25,15 +25,15 @@ public partial class BattlePanel : PanelContainer
 
     private void BuildStage(Control stage)
     {
-        AddTexture(stage, "res://assets/art/street_bg.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
+        AddTexture(stage, "res://assets/art/road_battlefield.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
 
         var halo = new TextureRect
         {
             Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
-            Position = new Vector2(252, 181),
-            Size = new Vector2(216, 427),
+            Position = new Vector2(146, 186),
+            Size = new Vector2(208, 417),
             Modulate = UiKit.Alpha(UiKit.Cyan, 0.22f),
             MouseFilter = MouseFilterEnum.Ignore,
         };
@@ -44,17 +44,17 @@ public partial class BattlePanel : PanelContainer
             Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
-            Position = new Vector2(260, 190),
+            Position = new Vector2(150, 190),
             Size = new Vector2(200, 409),
             Modulate = new Color(1.08f, 1.08f, 1.12f, 1f),
             MouseFilter = MouseFilterEnum.Ignore,
         };
         stage.AddChild(body);
-        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(326, 222), new Vector2(110, 74));
+        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(195, 207), new Vector2(110, 74));
 
         BuildScrims(stage);
 
-        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(0, 500), new Vector2(500, 280));
+        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(140, 385), new Vector2(220, 123));
 
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);

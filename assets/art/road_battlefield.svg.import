@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cykatlqnd8fha"
-path="res://.godot/imported/street_bg.svg-c50464b1a50cf920f2408808ae4a52f7.ctex"
+uid="uid://ci5bkkxqfc1af"
+path="res://.godot/imported/road_battlefield.svg-45df9fca8d923e7c6fa5d45d0a223ea8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/street_bg.svg"
-dest_files=["res://.godot/imported/street_bg.svg-c50464b1a50cf920f2408808ae4a52f7.ctex"]
+source_file="res://assets/art/road_battlefield.svg"
+dest_files=["res://.godot/imported/road_battlefield.svg-45df9fca8d923e7c6fa5d45d0a223ea8.ctex"]
 
 [params]
 
