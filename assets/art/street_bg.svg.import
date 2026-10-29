@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jtosswtb1wex"
-path="res://.godot/imported/lane_holo.svg-082c22d5439aa0674922e46d4676c48b.ctex"
+uid="uid://cykatlqnd8fha"
+path="res://.godot/imported/street_bg.svg-c50464b1a50cf920f2408808ae4a52f7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/lane_holo.svg"
-dest_files=["res://.godot/imported/lane_holo.svg-082c22d5439aa0674922e46d4676c48b.ctex"]
+source_file="res://assets/art/street_bg.svg"
+dest_files=["res://.godot/imported/street_bg.svg-c50464b1a50cf920f2408808ae4a52f7.ctex"]
 
 [params]
 

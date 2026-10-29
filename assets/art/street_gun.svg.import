@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cppdxa1slcmn"
-path="res://.godot/imported/zombie_front_walker.svg-a1bd38407b23531425cc47ca8e3f5fde.ctex"
+uid="uid://iglp7yr5rg8q"
+path="res://.godot/imported/street_gun.svg-a9bbe003d07249e7bbe9311ca937fe5f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/zombie_front_walker.svg"
-dest_files=["res://.godot/imported/zombie_front_walker.svg-a1bd38407b23531425cc47ca8e3f5fde.ctex"]
+source_file="res://assets/art/street_gun.svg"
+dest_files=["res://.godot/imported/street_gun.svg-a9bbe003d07249e7bbe9311ca937fe5f.ctex"]
 
 [params]
 

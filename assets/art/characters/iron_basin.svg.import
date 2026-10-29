@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4pi64lebvrfq"
-path="res://.godot/imported/iron_basin_hero_full.jpg-f697c318b39cb4d7277a7a0213b73419.ctex"
+uid="uid://c42cxi8c3w1ck"
+path="res://.godot/imported/iron_basin.svg-1bcaae1a0b0eabf529d42df4d8ebfccf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/characters/iron_basin_hero_full.jpg"
-dest_files=["res://.godot/imported/iron_basin_hero_full.jpg-f697c318b39cb4d7277a7a0213b73419.ctex"]
+source_file="res://assets/art/characters/iron_basin.svg"
+dest_files=["res://.godot/imported/iron_basin.svg-1bcaae1a0b0eabf529d42df4d8ebfccf.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

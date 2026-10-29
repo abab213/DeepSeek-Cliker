@@ -25,26 +25,38 @@ public partial class BattlePanel : PanelContainer
 
     private void BuildStage(Control stage)
     {
-        AddTexture(stage, "res://assets/art/characters/iron_basin_hero_full.jpg", new Vector2(0, 40), new Vector2(StageWidth, StageHeight));
+        AddTexture(stage, "res://assets/art/street_bg.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
 
-        var vignette = UiKit.HorizontalGradient(UiKit.Alpha(UiKit.BgTop, 0.82f), UiKit.Alpha(UiKit.BgTop, 0f));
-        vignette.Position = Vector2.Zero;
-        vignette.Size = new Vector2(310, StageHeight);
-        stage.AddChild(vignette);
+        var halo = new TextureRect
+        {
+            Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+            Position = new Vector2(252, 181),
+            Size = new Vector2(216, 427),
+            Modulate = UiKit.Alpha(UiKit.Cyan, 0.22f),
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        stage.AddChild(halo);
 
-        AddTexture(stage, "res://assets/art/lane_holo.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
-
-        AddTexture(stage, "res://assets/art/zombie_front_walker.svg", new Vector2(210, 226), new Vector2(58, 92), 0.56f);
-        AddTexture(stage, "res://assets/art/zombie_front_runner.svg", new Vector2(142, 254), new Vector2(52, 86), 0.68f);
-        AddTexture(stage, "res://assets/art/zombie_front_runner.svg", new Vector2(108, 338), new Vector2(104, 172), 0.94f);
-        AddTexture(stage, "res://assets/art/zombie_front_brute.svg", new Vector2(198, 468), new Vector2(150, 220), 1f);
+        var body = new TextureRect
+        {
+            Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+            Position = new Vector2(260, 190),
+            Size = new Vector2(200, 409),
+            Modulate = new Color(1.08f, 1.08f, 1.12f, 1f),
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        stage.AddChild(body);
+        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(326, 222), new Vector2(110, 74));
 
         BuildScrims(stage);
 
-        AddTexture(stage, "res://assets/art/defense_gun.svg", new Vector2(-120, 45), new Vector2(StageWidth, StageHeight));
-        AddTexture(stage, "res://assets/art/muzzle_flash.svg", new Vector2(68, 485), new Vector2(124, 92), 0.96f);
+        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(0, 500), new Vector2(500, 280));
 
-        var fx = new BattleFx();
+        var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
         fx.OffsetRight = 0;
         fx.OffsetBottom = 0;
@@ -108,24 +120,27 @@ public partial class BattlePanel : PanelContainer
         topRow.AddChild(divider);
         topRow.AddChild(UiKit.Label("S E C T O R  0 7", 7, UiKit.Alpha(UiKit.Cyan, 0.8f), UiKit.DisplayFont));
         topRow.AddChild(UiKit.HSpace(0, true));
-        topRow.AddChild(UiKit.Label("AUTO", 7, UiKit.Alpha(UiKit.Green, 0.72f), UiKit.DisplayFont));
+        topRow.AddChild(UiKit.Label("S T A N D B Y", 7, UiKit.Alpha(UiKit.Green, 0.7f), UiKit.DisplayFont));
 
         var location = UiKit.HBox(5);
         location.AddChild(UiKit.Label("望京高架 · 防线 03", 10, UiKit.Alpha(UiKit.Cyan, 0.8f), UiKit.BodyFont));
         location.AddChild(UiKit.HSpace(0, true));
+        location.AddChild(UiKit.Icon("res://assets/art/characters/iron_basin_avatar.webp", 19));
         location.AddChild(UiKit.Label("铁盆号", 9, UiKit.Alpha(UiKit.Text, 0.7f), UiKit.BodyFont));
 
         var waveRow = UiKit.HBox(6);
         waveRow.AddChild(UiKit.Icon("res://assets/icons/icon_skull.svg", 13, UiKit.Red));
         waveRow.AddChild(UiKit.Label("第 03 波", 10, UiKit.Text, UiKit.BoldFont));
         waveRow.AddChild(UiKit.HSpace(0, true));
-        waveRow.AddChild(UiKit.Label("剩余 12", 9, UiKit.Alpha(UiKit.Red, 0.9f), UiKit.BodyFont));
+        waveRow.AddChild(UiKit.Label("下一波 00:42", 9, UiKit.Alpha(UiKit.Red, 0.9f), UiKit.BodyFont));
 
         var spawnRow = UiKit.HBox(6);
-        spawnRow.AddChild(UiKit.Label("▼ ▼ ▼", 7, UiKit.Alpha(UiKit.Red, 0.9f), UiKit.DisplayFont));
-        spawnRow.AddChild(UiKit.Label("尸潮入口", 9, UiKit.Red, UiKit.BoldFont));
+        var calmDot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
+        calmDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
+        spawnRow.AddChild(calmDot);
+        spawnRow.AddChild(UiKit.Label("街道静默", 9, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BoldFont));
         spawnRow.AddChild(UiKit.HSpace(0, true));
-        spawnRow.AddChild(UiKit.Label("S P A W N", 7, UiKit.Alpha(UiKit.Red, 0.68f), UiKit.DisplayFont));
+        spawnRow.AddChild(UiKit.Label("S I L E N T", 7, UiKit.Alpha(UiKit.Cyan, 0.55f), UiKit.DisplayFont));
 
         column.AddChild(topRow);
         column.AddChild(location);
@@ -134,7 +149,7 @@ public partial class BattlePanel : PanelContainer
             UiKit.Box(UiKit.Alpha(UiKit.Red, 0.08f), UiKit.Alpha(UiKit.Red, 0.34f), 6)));
         column.AddChild(UiKit.PanelBox(
             UiKit.Pad(spawnRow, 8, 3, 8, 3),
-            UiKit.Box(new Color(0, 0, 0, 0), UiKit.Alpha(UiKit.Red, 0.2f), 6)));
+            UiKit.Box(new Color(0, 0, 0, 0), UiKit.Alpha(UiKit.Green, 0.18f), 6)));
 
         panel.AddChild(UiKit.Pad(column, 11, 9, 11, 9));
         stage.AddChild(panel);
@@ -200,17 +215,17 @@ public partial class BattlePanel : PanelContainer
         bottom.AddChild(UiKit.HSpace(0, true));
 
         var auto = UiKit.HBox(5);
-        auto.AddChild(UiKit.Icon("res://assets/icons/icon_fire.svg", 12, UiKit.Warm));
-        auto.AddChild(UiKit.Label("自动射击", 10, UiKit.Alpha(UiKit.Warm, 0.92f), UiKit.BodyFont));
+        auto.AddChild(UiKit.Icon("res://assets/icons/icon_fire.svg", 12, UiKit.Alpha(UiKit.Green, 0.85f)));
+        auto.AddChild(UiKit.Label("自动待命", 10, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BodyFont));
         bottom.AddChild(auto);
 
         bottom.AddChild(UiKit.HSpace(0, true));
 
         var threat = UiKit.HBox(5);
         var threatDot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
-        threatDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Red, UiKit.Red, 3, 0));
+        threatDot.AddThemeStyleboxOverride("panel", UiKit.Box(UiKit.Green, UiKit.Green, 3, 0));
         threat.AddChild(threatDot);
-        threat.AddChild(UiKit.Label("威胁等级 中", 10, UiKit.Muted, UiKit.BodyFont));
+        threat.AddChild(UiKit.Label("威胁等级 低", 10, UiKit.Muted, UiKit.BodyFont));
         bottom.AddChild(threat);
 
         root.AddChild(bottom);
@@ -218,7 +233,7 @@ public partial class BattlePanel : PanelContainer
     }
 }
 
-public partial class BattleFx : Control
+public partial class StreetFx : Control
 {
     private float _time;
 
@@ -236,59 +251,27 @@ public partial class BattleFx : Control
 
     public override void _Draw()
     {
-        var muzzle = new Vector2(130, 533);
-        var nearTarget = new Vector2(274, 535);
-        var midTarget = new Vector2(160, 425);
-        var farTarget = new Vector2(238, 300);
-        float flicker = 0.55f + 0.45f * Mathf.Sin(_time * 24f);
-
-        DrawCircle(muzzle, 36, UiKit.Alpha(UiKit.Cyan, 0.06f));
-        DrawLine(muzzle, nearTarget, UiKit.Alpha(UiKit.Gold, 0.2f), 7f, true);
-        DrawLine(muzzle, nearTarget, UiKit.Alpha(UiKit.Cyan, 0.82f), 2f, true);
-        DrawLine(muzzle, midTarget, UiKit.Alpha(UiKit.Gold, 0.16f), 4f, true);
-        DrawLine(muzzle, farTarget, UiKit.Alpha(UiKit.Gold, 0.1f), 2f, true);
-        DrawLine(muzzle + new Vector2(-2, 0), nearTarget + new Vector2(0, -4), UiKit.Alpha(UiKit.White, 0.75f * flicker), 1f, true);
-        DrawLine(muzzle, midTarget, UiKit.Alpha(UiKit.White, 0.3f * flicker), 1f, true);
-
-        DrawImpact(nearTarget, 1f);
-        DrawImpact(midTarget, 0.7f);
-        DrawImpact(farTarget, 0.4f);
-
-        var head = new Vector2(274, 495);
-        DrawArc(head, 30, -0.9f, 0.9f, 18, UiKit.Alpha(UiKit.Cyan, 0.4f), 1.3f, true);
-        DrawArc(head, 30, Mathf.Pi - 0.9f, Mathf.Pi + 0.9f, 18, UiKit.Alpha(UiKit.Cyan, 0.4f), 1.3f, true);
-        DrawLine(head + new Vector2(0, -44), head + new Vector2(0, -34), UiKit.Alpha(UiKit.Cyan, 0.5f), 1.2f, true);
-        DrawLine(head + new Vector2(0, 34), head + new Vector2(0, 44), UiKit.Alpha(UiKit.Cyan, 0.5f), 1.2f, true);
-        DrawLine(head + new Vector2(-44, 0), head + new Vector2(-34, 0), UiKit.Alpha(UiKit.Cyan, 0.5f), 1.2f, true);
-        DrawLine(head + new Vector2(34, 0), head + new Vector2(44, 0), UiKit.Alpha(UiKit.Cyan, 0.5f), 1.2f, true);
-
         var rng = new RandomNumberGenerator { Seed = 2077 };
-        for (int i = 0; i < 24; i++)
+        for (int i = 0; i < 26; i++)
         {
-            float x = rng.RandfRange(16, 484);
-            float baseY = rng.RandfRange(90, 640);
-            float speed = rng.RandfRange(26f, 52f);
-            float y = ((baseY + _time * speed + i * 37f) % 580f) + 60f;
-            float len = rng.RandfRange(10f, 26f);
-            DrawLine(new Vector2(x, y), new Vector2(x - len * 0.28f, y + len), UiKit.Alpha(UiKit.Cyan, 0.12f), 1f, true);
+            float x = rng.RandfRange(4, 496);
+            float baseY = rng.RandfRange(80, 700);
+            float speed = rng.RandfRange(22f, 46f);
+            float y = ((baseY + _time * speed + i * 43f) % 600f) + 30f;
+            float len = rng.RandfRange(9f, 22f);
+            DrawLine(new Vector2(x, y), new Vector2(x - len * 0.24f, y + len), UiKit.Alpha(UiKit.Cyan, 0.1f), 1f, true);
         }
 
-        float warn = 0.5f + 0.5f * Mathf.Sin(_time * 2.8f);
-        DrawLine(new Vector2(154, 186), new Vector2(302, 186), UiKit.Alpha(UiKit.Red, 0.12f + warn * 0.1f), 2f, true);
-        DrawLine(new Vector2(176, 198), new Vector2(280, 198), UiKit.Alpha(UiKit.Red, 0.06f + warn * 0.06f), 1f, true);
-
-        DrawLine(new Vector2(14, 604), new Vector2(330, 604), UiKit.Alpha(UiKit.Cyan, 0.1f + warn * 0.06f), 1f, true);
-        DrawLine(new Vector2(14, 610), new Vector2(330, 610), UiKit.Alpha(UiKit.Cyan, 0.04f), 1f, true);
-    }
-
-    private void DrawImpact(Vector2 point, float strength)
-    {
-        DrawCircle(point, 4.5f * strength, UiKit.Alpha(UiKit.Gold, 0.5f * strength));
-        for (int i = 0; i < 4; i++)
+        var rng2 = new RandomNumberGenerator { Seed = 77 };
+        for (int i = 0; i < 12; i++)
         {
-            float angle = i * Mathf.Pi * 0.5f + 0.35f;
-            var dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            DrawLine(point, point + dir * (9f + 4f * strength), UiKit.Alpha(UiKit.Gold, 0.7f * strength), 1.2f, true);
+            float x = rng2.RandfRange(20, 480);
+            float baseY = rng2.RandfRange(120, 560);
+            float y = baseY - ((_time * rng2.RandfRange(4f, 10f) + i * 17f) % 100f);
+            DrawCircle(new Vector2(x, y), rng2.RandfRange(0.6f, 1.4f), UiKit.Alpha(UiKit.Warm, 0.16f));
         }
+
+        float pulse = 0.5f + 0.5f * Mathf.Sin(_time * 1.8f);
+        DrawLine(new Vector2(16, 632), new Vector2(484, 632), UiKit.Alpha(UiKit.Cyan, 0.05f + pulse * 0.03f), 1f, true);
     }
 }

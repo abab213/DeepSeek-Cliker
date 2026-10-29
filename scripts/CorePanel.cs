@@ -135,9 +135,9 @@ public partial class CorePanel : PanelContainer
         root.AddChild(header);
         root.AddChild(UiKit.VSpace(2));
 
-        root.AddChild(SituationRow(UiKit.Red, "第 03 波 · 尸潮推进中", "剩余 12", "dot"));
+        root.AddChild(SituationRow(UiKit.Green, "第 03 波 · 间歇期", "防线静默", "dot"));
         root.AddChild(UiKit.HLine(UiKit.Alpha(UiKit.Cyan, 0.06f), 1));
-        root.AddChild(SituationRow(UiKit.Warm, "铁盆号 · 自动射击中", "击杀 42", "fire"));
+        root.AddChild(SituationRow(UiKit.Green, "铁盆号 · 战位待命", "击杀 42", "fire"));
         root.AddChild(UiKit.HLine(UiKit.Alpha(UiKit.Cyan, 0.06f), 1));
         root.AddChild(SituationRow(UiKit.Gold, "下一波", "00:42", "target"));
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dyoi6vlr21din"
-path="res://.godot/imported/zombie_front_runner.svg-845ebecf1eef9be0cd6e6788340a5426.ctex"
+uid="uid://b5vfu7xhhbry7"
+path="res://.godot/imported/character_back.webp-4b720c2d9f7c01d066c25e42ac3a1638.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/zombie_front_runner.svg"
-dest_files=["res://.godot/imported/zombie_front_runner.svg-845ebecf1eef9be0cd6e6788340a5426.ctex"]
+source_file="res://assets/art/characters/character_back.webp"
+dest_files=["res://.godot/imported/character_back.webp-4b720c2d9f7c01d066c25e42ac3a1638.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

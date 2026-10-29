@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d12i46pku2vc4"
-path="res://.godot/imported/zombie_front_brute.svg-3e9a59ad9a7b561cf767b9cef439d7f3.ctex"
+uid="uid://dvvk736s8k133"
+path="res://.godot/imported/iron_basin_avatar.webp-30e2be0125c62e6198916b6613bf43a9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/zombie_front_brute.svg"
-dest_files=["res://.godot/imported/zombie_front_brute.svg-3e9a59ad9a7b561cf767b9cef439d7f3.ctex"]
+source_file="res://assets/art/characters/iron_basin_avatar.webp"
+dest_files=["res://.godot/imported/iron_basin_avatar.webp-30e2be0125c62e6198916b6613bf43a9.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false
