@@ -96,8 +96,8 @@ public partial class CombatField : Control
     {
         AudioManager.Play("wave", 0.8f);
         _wave = _state.Wave;
-        _spawnLeft = 8 + _wave * 2;
-        _spawnInterval = Mathf.Max(0.3f, 0.55f - _wave * 0.02f);
+        _spawnLeft = 6 + _wave * 2;
+        _spawnInterval = Mathf.Max(0.42f, 0.9f - _wave * 0.04f);
         _spawnTimer = 0.25f;
         _fireTimer = 0f;
         _zombies.Clear();
@@ -140,7 +140,7 @@ public partial class CombatField : Control
 
         if (_spawnLeft <= 0 && _zombies.Count == 0)
         {
-            _state.AddWaveBonus(25 + _wave * 6, 25 + _wave * 4);
+            _state.AddWaveBonus(30 + _wave * 10, 30 + _wave * 8);
             _state.SetWave(_wave + 1, false, 7);
             _tracers.Clear();
         }
@@ -155,9 +155,9 @@ public partial class CombatField : Control
         else if (_wave >= 2 && roll < 0.55f)
             type = ZombieType.Runner;
 
-        var baseHp = 50f + _wave * 15f;
-        var baseSpeed = 27f + _wave * 2.5f;
-        var baseDamage = 55f + _wave * 8f;
+        var baseHp = 45f + _wave * 14f;
+        var baseSpeed = 24f + _wave * 2.2f;
+        var baseDamage = 50f + _wave * 7f;
 
         var zombie = new Zombie
         {
@@ -230,7 +230,7 @@ public partial class CombatField : Control
             _zombies.Remove(target);
             AudioManager.Play("hit", 0.65f);
             Burst(hit, new Color("59d68a"), 7);
-            _state.AddKill(10 + _wave * 3, 2 + _wave * 0.5);
+            _state.AddKill(8 + _wave * 3, 2 + _wave * 0.6);
         }
         else
         {

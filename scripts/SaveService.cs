@@ -19,6 +19,8 @@ public sealed class SaveData
     public bool EffectsEnabled { get; set; } = true;
     public bool AudioEnabled { get; set; } = true;
     public bool MusicEnabled { get; set; } = true;
+    public float SfxVolume { get; set; } = 0.7f;
+    public float MusicVolume { get; set; } = 0.35f;
 }
 
 public static class SaveService

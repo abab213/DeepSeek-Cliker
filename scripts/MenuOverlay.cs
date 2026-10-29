@@ -12,6 +12,11 @@ public partial class MenuOverlay : Control
     private Button _effectsButton = null!;
     private Button _audioButton = null!;
     private Button _musicButton = null!;
+    private HSlider _sfxSlider = null!;
+    private HSlider _musicSlider = null!;
+    private Label _sfxPercent = null!;
+    private Label _musicPercent = null!;
+    private bool _updatingVolume;
     private Button _clearButton = null!;
     private bool _confirmClear;
 
@@ -134,7 +139,9 @@ public partial class MenuOverlay : Control
         box.AddChild(SettingRow("自动保存", "每 30 秒自动写入进度", out _autoButton, ToggleAutoSave));
         box.AddChild(SettingRow("战斗特效", "曳光弹、粒子和命中闪光", out _effectsButton, ToggleEffects));
         box.AddChild(SettingRow("音效", "点击、射击、购买与警报", out _audioButton, ToggleAudio));
+        box.AddChild(VolumeRow("音效音量", out _sfxSlider, out _sfxPercent, OnSfxVolume));
         box.AddChild(SettingRow("背景音乐", "废土氛围循环 BGM", out _musicButton, ToggleMusic));
+        box.AddChild(VolumeRow("音乐音量", out _musicSlider, out _musicPercent, OnMusicVolume));
 
         box.AddChild(UiKit.HLine(UiKit.Alpha(UiKit.Cyan, 0.1f), 1));
         box.AddChild(SecondaryButton("保存进度", () => SaveNow()));
@@ -173,6 +180,58 @@ public partial class MenuOverlay : Control
         return row;
     }
 
+    private Control VolumeRow(string title, out HSlider slider, out Label percent, System.Action<double> onChanged)
+    {
+        var row = UiKit.HBox(8);
+        row.CustomMinimumSize = new Vector2(340, 22);
+
+        var label = UiKit.Label(title, 9, UiKit.Muted, UiKit.BodyFont);
+        label.CustomMinimumSize = new Vector2(58, 0);
+        row.AddChild(label);
+
+        slider = new HSlider
+        {
+            MinValue = 0,
+            MaxValue = 100,
+            Step = 1,
+            Value = 50,
+            CustomMinimumSize = new Vector2(150, 16),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+            FocusMode = FocusModeEnum.None,
+        };
+        slider.AddThemeStyleboxOverride("slider", UiKit.Box(new Color("040a11"), UiKit.Alpha(UiKit.Cyan, 0.25f), 3, 1));
+        slider.AddThemeStyleboxOverride("grabber_area", UiKit.Box(UiKit.Alpha(UiKit.Cyan, 0.35f), UiKit.Alpha(UiKit.Cyan, 0.5f), 3, 0));
+        slider.AddThemeStyleboxOverride("grabber_area_highlight", UiKit.Box(UiKit.Alpha(UiKit.Cyan, 0.55f), UiKit.Cyan, 3, 0));
+        row.AddChild(slider);
+
+        var percentLabel = UiKit.Display("50%", 9, UiKit.Cyan);
+        percent = percentLabel;
+        percentLabel.CustomMinimumSize = new Vector2(34, 0);
+        percentLabel.HorizontalAlignment = HorizontalAlignment.Right;
+        row.AddChild(percentLabel);
+
+        slider.ValueChanged += value =>
+        {
+            percentLabel.Text = $"{value:0}%";
+            if (!_updatingVolume)
+                onChanged(value);
+        };
+        return row;
+    }
+
+    private void OnSfxVolume(double value)
+    {
+        _state.SfxVolume = (float)(value / 100.0);
+        AudioManager.SetSfxVolume(_state.SfxVolume);
+    }
+
+    private void OnMusicVolume(double value)
+    {
+        _state.MusicVolume = (float)(value / 100.0);
+        AudioManager.SetMusicVolume(_state.MusicVolume);
+    }
+
     private void RefreshPauseStats()
     {
         _pauseStats.Text = $"第 {_state.Wave:00} 波 · 击杀 {_state.Kills} · 积分 {_state.Score:N0} · 白饭 {_state.Rice:N0}";
@@ -184,6 +243,13 @@ public partial class MenuOverlay : Control
         ApplyToggle(_effectsButton, _state.EffectsEnabled);
         ApplyToggle(_audioButton, _state.AudioEnabled);
         ApplyToggle(_musicButton, _state.MusicEnabled);
+
+        _updatingVolume = true;
+        _sfxSlider.SetValueNoSignal(_state.SfxVolume * 100.0);
+        _musicSlider.SetValueNoSignal(_state.MusicVolume * 100.0);
+        _sfxPercent.Text = $"{_state.SfxVolume * 100:0}%";
+        _musicPercent.Text = $"{_state.MusicVolume * 100:0}%";
+        _updatingVolume = false;
     }
 
     private void ToggleAutoSave()

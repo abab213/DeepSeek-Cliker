@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 using System.Collections.Generic;
 
 public static class AudioManager
@@ -10,6 +10,8 @@ public static class AudioManager
 
     public static bool Enabled { get; private set; } = true;
     public static bool MusicEnabled { get; private set; } = true;
+    public static float SfxVolume { get; private set; } = 0.7f;
+    public static float MusicVolume { get; private set; } = 0.35f;
 
     public static void Init(Node host)
     {
@@ -39,7 +41,7 @@ public static class AudioManager
         {
             Bus = "Master",
             ProcessMode = Node.ProcessModeEnum.Always,
-            VolumeDb = -11f,
+            VolumeDb = Mathf.LinearToDb(Mathf.Max(0.001f, MusicVolume * 0.8f)),
         };
         host.AddChild(_music);
 
@@ -71,6 +73,18 @@ public static class AudioManager
     public static void StopMusic()
     {
         _music?.Stop();
+    }
+
+    public static void SetSfxVolume(float volume)
+    {
+        SfxVolume = Mathf.Clamp(volume, 0f, 1f);
+    }
+
+    public static void SetMusicVolume(float volume)
+    {
+        MusicVolume = Mathf.Clamp(volume, 0f, 1f);
+        if (_music != null)
+            _music.VolumeDb = Mathf.LinearToDb(Mathf.Max(0.001f, MusicVolume * 0.8f));
     }
 
     public static void SetEnabled(bool enabled)
@@ -105,7 +119,7 @@ public static class AudioManager
         }
 
         player.Stream = stream;
-        player.VolumeDb = Mathf.LinearToDb(Mathf.Clamp(volume, 0.01f, 1f) * 0.7f);
+        player.VolumeDb = Mathf.LinearToDb(Mathf.Max(0.001f, Mathf.Clamp(volume, 0f, 1f) * SfxVolume));
         player.Play();
     }
 }

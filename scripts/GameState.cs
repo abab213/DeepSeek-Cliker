@@ -102,13 +102,15 @@ public sealed class GameState
     public int Score { get; private set; }
     public int Wave { get; private set; } = 1;
     public bool WaveActive { get; private set; }
-    public double WaveTimer { get; private set; } = 5;
+    public double WaveTimer { get; private set; } = 10;
     public bool GameOver { get; private set; }
     public bool Paused { get; private set; }
     public bool AutoSave { get; set; } = true;
     public bool EffectsEnabled { get; set; } = true;
     public bool AudioEnabled { get; set; } = true;
     public bool MusicEnabled { get; set; } = true;
+    public float SfxVolume { get; set; } = 0.7f;
+    public float MusicVolume { get; set; } = 0.35f;
     public double OverloadTimer { get; private set; }
     public double FreezeTimer { get; private set; }
     public double Combo { get; private set; } = 1.0;
@@ -600,6 +602,8 @@ public sealed class GameState
             EffectsEnabled = EffectsEnabled,
             AudioEnabled = AudioEnabled,
             MusicEnabled = MusicEnabled,
+            SfxVolume = SfxVolume,
+            MusicVolume = MusicVolume,
         };
     }
 
@@ -636,8 +640,10 @@ public sealed class GameState
         EffectsEnabled = data.EffectsEnabled;
         AudioEnabled = data.AudioEnabled;
         MusicEnabled = data.MusicEnabled;
+        SfxVolume = Mathf.Clamp(data.SfxVolume, 0f, 1f);
+        MusicVolume = Mathf.Clamp(data.MusicVolume, 0f, 1f);
         WaveActive = false;
-        WaveTimer = 5;
+        WaveTimer = 10;
         GameOver = false;
         Paused = false;
         Combo = 1;

@@ -70,6 +70,8 @@ public partial class Main : Control
         AudioManager.Init(this);
         AudioManager.SetEnabled(_state.AudioEnabled);
         AudioManager.SetMusicEnabled(_state.MusicEnabled);
+        AudioManager.SetSfxVolume(_state.SfxVolume);
+        AudioManager.SetMusicVolume(_state.MusicVolume);
         _state.Clicked += (_, _) => AudioManager.Play("click");
         _state.PurchaseMade += () => AudioManager.Play("buy");
         _state.TacticalUsed += () => AudioManager.Play("tactical");
@@ -168,7 +170,7 @@ public partial class Main : Control
 
         if (HasArg("--combat"))
         {
-            for (int i = 0; i < 560; i++)
+            for (int i = 0; i < 760; i++)
                 await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
         }
 
