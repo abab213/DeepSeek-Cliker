@@ -27,34 +27,6 @@ public partial class BattlePanel : PanelContainer
     {
         AddTexture(stage, "res://assets/art/road_battlefield.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
 
-        var halo = new TextureRect
-        {
-            Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            StretchMode = TextureRect.StretchModeEnum.Scale,
-            Position = new Vector2(241, 231),
-            Size = new Vector2(208, 417),
-            Modulate = UiKit.Alpha(UiKit.Cyan, 0.22f),
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        stage.AddChild(halo);
-
-        var body = new TextureRect
-        {
-            Texture = GD.Load<Texture2D>("res://assets/art/characters/character_back.webp"),
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            StretchMode = TextureRect.StretchModeEnum.Scale,
-            Position = new Vector2(245, 235),
-            Size = new Vector2(200, 409),
-            Modulate = new Color(1.08f, 1.08f, 1.12f, 1f),
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        stage.AddChild(body);
-        AddTexture(stage, "res://assets/art/characters/iron_basin.svg", new Vector2(290, 252), new Vector2(110, 74));
-
-        AddTexture(stage, "res://assets/art/street_gun.svg", new Vector2(80, 360), new Vector2(300, 168));
-        AddTexture(stage, "res://assets/art/sandbag_wall.svg", new Vector2(0, 500), new Vector2(500, 200));
-
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
         fx.OffsetRight = 0;
@@ -124,7 +96,6 @@ public partial class BattlePanel : PanelContainer
         var location = UiKit.HBox(5);
         location.AddChild(UiKit.Label("望京高架 · 防线 03", 10, UiKit.Alpha(UiKit.Cyan, 0.8f), UiKit.BodyFont));
         location.AddChild(UiKit.HSpace(0, true));
-        location.AddChild(UiKit.Icon("res://assets/art/characters/iron_basin_avatar.webp", 19));
         location.AddChild(UiKit.Label("铁盆号", 9, UiKit.Alpha(UiKit.Text, 0.7f), UiKit.BodyFont));
 
         var waveRow = UiKit.HBox(6);
