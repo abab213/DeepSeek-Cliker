@@ -2,14 +2,28 @@ using Godot;
 
 public partial class TopBar : PanelContainer
 {
-    public TopBar()
+    private readonly GameState _state;
+    private Label _rice = null!;
+    private Label _rate = null!;
+    private Label _power = null!;
+    private Label _wave = null!;
+    private Label _score = null!;
+    private Label _defenseText = null!;
+    private Label _defensePercent = null!;
+    private ProgressBar _defenseBar = null!;
+    private Label _kills = null!;
+
+    public TopBar(GameState state)
     {
+        _state = state;
         CustomMinimumSize = new Vector2(0, 84);
         AddThemeStyleboxOverride(
             "panel",
             UiKit.Box(UiKit.Panel, UiKit.Line, 16, 1, 14, new Color(0, 0, 0, 0.34f)));
 
         AddChild(UiKit.Pad(BuildContent(), 20, 10, 16, 10));
+        _state.Changed += Refresh;
+        Refresh();
     }
 
     private Control BuildContent()
@@ -62,15 +76,15 @@ public partial class TopBar : PanelContainer
         stats.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         stats.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
-        AddStat(stats, "res://assets/icons/icon_rice.svg", "白饭存量", "1,280", "碗", UiKit.Gold);
+        _rice = AddStat(stats, "res://assets/icons/icon_rice.svg", "白饭存量", "1,280", "碗", UiKit.Gold);
         AddSeparator(stats);
-        AddStat(stats, "res://assets/icons/icon_rate.svg", "白饭产出", "3.5", "/秒", UiKit.Green);
+        _rate = AddStat(stats, "res://assets/icons/icon_rate.svg", "白饭产出", "3.5", "/秒", UiKit.Green);
         AddSeparator(stats);
-        AddStat(stats, "res://assets/icons/icon_power.svg", "战斗力", "24", "级", UiKit.Cyan);
+        _power = AddStat(stats, "res://assets/icons/icon_power.svg", "战斗力", "24", "级", UiKit.Cyan);
         AddSeparator(stats);
-        AddStat(stats, "res://assets/icons/icon_skull.svg", "当前波次", "03", "/∞", UiKit.Text);
+        _wave = AddStat(stats, "res://assets/icons/icon_skull.svg", "当前波次", "03", "/∞", UiKit.Text);
         AddSeparator(stats);
-        AddStat(stats, "res://assets/icons/icon_star.svg", "防线积分", "360", "分", UiKit.Gold);
+        _score = AddStat(stats, "res://assets/icons/icon_star.svg", "防线积分", "360", "分", UiKit.Gold);
 
         return stats;
     }
@@ -84,8 +98,9 @@ public partial class TopBar : PanelContainer
         var defense = UiKit.HBox(5);
         defense.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         defense.AddChild(UiKit.Icon("res://assets/icons/icon_shield.svg", 10, UiKit.Green));
-        defense.AddChild(UiKit.Label("防线 780/1000", 8, UiKit.Muted, UiKit.BodyFont));
-        var bar = new ProgressBar
+        _defenseText = UiKit.Label("防线 780/1000", 8, UiKit.Muted, UiKit.BodyFont);
+        defense.AddChild(_defenseText);
+        _defenseBar = new ProgressBar
         {
             Value = 78,
             MaxValue = 100,
@@ -94,16 +109,25 @@ public partial class TopBar : PanelContainer
             MouseFilter = MouseFilterEnum.Ignore,
             SizeFlagsVertical = SizeFlags.ShrinkCenter,
         };
-        bar.AddThemeStyleboxOverride("background", UiKit.Box(new Color("040a11"), new Color("040a11"), 2, 0));
-        bar.AddThemeStyleboxOverride("fill", UiKit.Box(UiKit.Green, UiKit.Green, 2, 0));
-        defense.AddChild(bar);
-        defense.AddChild(UiKit.Display("78%", 9, UiKit.Green));
+        _defenseBar.AddThemeStyleboxOverride("background", UiKit.Box(new Color("040a11"), new Color("040a11"), 2, 0));
+        _defenseBar.AddThemeStyleboxOverride("fill", UiKit.Box(UiKit.Green, UiKit.Green, 2, 0));
+        defense.AddChild(_defenseBar);
+        _defensePercent = UiKit.Display("78%", 9, UiKit.Green);
+        defense.AddChild(_defensePercent);
         row.AddChild(defense);
         row.AddChild(MakeDivider(11));
-        row.AddChild(SecondaryItem("res://assets/icons/icon_skull.svg", UiKit.Alpha(UiKit.Red, 0.9f), "击杀 42", UiKit.Muted));
+
+        var kills = UiKit.HBox(4);
+        kills.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        kills.AddChild(UiKit.Icon("res://assets/icons/icon_skull.svg", 10, UiKit.Alpha(UiKit.Red, 0.9f)));
+        _kills = UiKit.Label("击杀 42", 8, UiKit.Muted, UiKit.BodyFont);
+        kills.AddChild(_kills);
+        row.AddChild(kills);
         row.AddChild(MakeDivider(11));
+
         row.AddChild(SecondaryItem("res://assets/icons/icon_fire.svg", UiKit.Alpha(UiKit.Green, 0.85f), "防线待命", UiKit.Alpha(UiKit.Green, 0.9f)));
         row.AddChild(UiKit.HSpace(0, true));
+
         var threat = UiKit.HBox(5);
         threat.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         var dot = new Panel { CustomMinimumSize = new Vector2(5, 5), SizeFlagsVertical = SizeFlags.ShrinkCenter };
@@ -112,6 +136,21 @@ public partial class TopBar : PanelContainer
         threat.AddChild(UiKit.Label("威胁等级 低", 8, UiKit.Muted, UiKit.BodyFont));
         row.AddChild(threat);
         return row;
+    }
+
+    private void Refresh()
+    {
+        _rice.Text = _state.Rice.ToString("N0");
+        _rate.Text = _state.Production.ToString("0.0");
+        _power.Text = _state.CombatPower.ToString();
+        _wave.Text = _state.Wave.ToString("00");
+        _score.Text = _state.Score.ToString("N0");
+
+        var ratio = _state.MaxDefense > 0 ? _state.Defense / _state.MaxDefense : 0;
+        _defenseText.Text = $"防线 {_state.Defense:N0}/{_state.MaxDefense:N0}";
+        _defenseBar.Value = ratio * 100;
+        _defensePercent.Text = $"{ratio * 100:0}%";
+        _kills.Text = $"击杀 {_state.Kills}";
     }
 
     private static Control SecondaryItem(string icon, Color tint, string text, Color color)
@@ -145,7 +184,7 @@ public partial class TopBar : PanelContainer
         return actions;
     }
 
-    private static void AddStat(BoxContainer parent, string icon, string caption, string value, string unit, Color color)
+    private Label AddStat(BoxContainer parent, string icon, string caption, string value, string unit, Color color)
     {
         var chip = UiKit.HBox(9);
         chip.SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -161,7 +200,8 @@ public partial class TopBar : PanelContainer
         text.AddChild(UiKit.Label(caption, 10, UiKit.Muted, UiKit.BodyFont));
 
         var row = UiKit.HBox(4);
-        row.AddChild(UiKit.Display(value, 21, color));
+        var valueLabel = UiKit.Display(value, 21, color);
+        row.AddChild(valueLabel);
         var unitLabel = UiKit.Label(unit, 10, UiKit.Faint, UiKit.BodyFont);
         unitLabel.SizeFlagsVertical = SizeFlags.ShrinkEnd;
         row.AddChild(unitLabel);
@@ -169,6 +209,7 @@ public partial class TopBar : PanelContainer
 
         chip.AddChild(text);
         parent.AddChild(chip);
+        return valueLabel;
     }
 
     private static void AddSeparator(BoxContainer parent)

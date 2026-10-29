@@ -2,12 +2,25 @@ using Godot;
 
 public partial class CorePanel : PanelContainer
 {
-    public CorePanel()
+    private readonly GameState _state;
+    private CoreDisplay _core = null!;
+    private Label _rewardValue = null!;
+    private Label _critValue = null!;
+    private Label _comboValue = null!;
+    private Label _goalName = null!;
+    private Label _goalAmount = null!;
+    private ProgressBar _goalBar = null!;
+
+    public CorePanel(GameState state)
     {
+        _state = state;
         CustomMinimumSize = new Vector2(380, 0);
         SizeFlagsVertical = SizeFlags.ExpandFill;
         AddThemeStyleboxOverride("panel", UiKit.PanelStyle(true));
         AddChild(UiKit.Pad(BuildContent(), 22, 18, 22, 18));
+        _state.Changed += Refresh;
+        _state.Clicked += OnClicked;
+        Refresh();
     }
 
     private Control BuildContent()
@@ -58,7 +71,9 @@ public partial class CorePanel : PanelContainer
             CustomMinimumSize = new Vector2(0, 322),
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
         };
-        coreCenter.AddChild(new CoreDisplay());
+        _core = new CoreDisplay();
+        _core.Clicked += OnCoreClick;
+        coreCenter.AddChild(_core);
         root.AddChild(coreCenter);
 
         var rewardCenter = new CenterContainer();
@@ -69,8 +84,8 @@ public partial class CorePanel : PanelContainer
         root.AddChild(UiKit.VSpace(12));
 
         var stats = UiKit.HBox(10);
-        var crit = InfoTile("res://assets/icons/icon_star.svg", "暴击率", "0%", UiKit.Gold);
-        var combo = InfoTile("res://assets/icons/icon_fire.svg", "连击倍率", "×1.0", UiKit.Cyan);
+        var crit = InfoTile("res://assets/icons/icon_star.svg", "暴击率", "0%", UiKit.Gold, out _critValue);
+        var combo = InfoTile("res://assets/icons/icon_fire.svg", "连击倍率", "×1.0", UiKit.Cyan, out _comboValue);
         crit.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         combo.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         stats.AddChild(crit);
@@ -99,19 +114,21 @@ public partial class CorePanel : PanelContainer
         var row = UiKit.HBox(7);
         row.AddChild(UiKit.Icon("res://assets/icons/icon_rice.svg", 17, UiKit.Gold));
         row.AddChild(UiKit.Label("每次点击", 10, UiKit.Alpha(UiKit.Gold, 0.72f), UiKit.BodyFont));
-        row.AddChild(UiKit.Display("+2", 18, UiKit.Gold));
+        _rewardValue = UiKit.Display("+2", 18, UiKit.Gold);
+        row.AddChild(_rewardValue);
         row.AddChild(UiKit.Label("白饭", 10, UiKit.Alpha(UiKit.Gold, 0.8f), UiKit.BodyFont));
         return UiKit.Pad(row, 14, 6, 14, 6);
     }
 
-    private Control InfoTile(string icon, string caption, string value, Color color)
+    private Control InfoTile(string icon, string caption, string value, Color color, out Label valueLabel)
     {
         var row = UiKit.HBox(9);
         row.AddChild(UiKit.Icon(icon, 18, UiKit.Alpha(color, 0.9f)));
 
         var text = UiKit.VBox(0);
         text.AddChild(UiKit.Label(caption, 10, UiKit.Muted, UiKit.BodyFont));
-        text.AddChild(UiKit.Display(value, 16, color));
+        valueLabel = UiKit.Display(value, 16, color);
+        text.AddChild(valueLabel);
         row.AddChild(text);
 
         var panel = UiKit.PanelBox(
@@ -170,12 +187,14 @@ public partial class CorePanel : PanelContainer
         var top = UiKit.HBox(7);
         top.AddChild(UiKit.Icon("res://assets/icons/icon_target.svg", 13, UiKit.Gold));
         top.AddChild(UiKit.Label("下一目标", 9, UiKit.Muted, UiKit.BodyFont));
-        top.AddChild(UiKit.Label("深潜食堂", 10, UiKit.Text, UiKit.BoldFont));
+        _goalName = UiKit.Label("深潜食堂", 10, UiKit.Text, UiKit.BoldFont);
+        top.AddChild(_goalName);
         top.AddChild(UiKit.HSpace(0, true));
-        top.AddChild(UiKit.Display("1,280 / 2,400", 9, UiKit.Alpha(UiKit.Gold, 0.9f)));
+        _goalAmount = UiKit.Display("1,280 / 2,400", 9, UiKit.Alpha(UiKit.Gold, 0.9f));
+        top.AddChild(_goalAmount);
         root.AddChild(top);
 
-        var bar = new ProgressBar
+        _goalBar = new ProgressBar
         {
             Value = 53,
             MaxValue = 100,
@@ -183,9 +202,9 @@ public partial class CorePanel : PanelContainer
             CustomMinimumSize = new Vector2(0, 4),
             MouseFilter = MouseFilterEnum.Ignore,
         };
-        bar.AddThemeStyleboxOverride("background", UiKit.Box(new Color("040a11"), new Color("040a11"), 2, 0));
-        bar.AddThemeStyleboxOverride("fill", UiKit.Box(UiKit.Gold, UiKit.Gold, 2, 0));
-        root.AddChild(bar);
+        _goalBar.AddThemeStyleboxOverride("background", UiKit.Box(new Color("040a11"), new Color("040a11"), 2, 0));
+        _goalBar.AddThemeStyleboxOverride("fill", UiKit.Box(UiKit.Gold, UiKit.Gold, 2, 0));
+        root.AddChild(_goalBar);
 
         return UiKit.Pad(root, 11, 8, 11, 8);
     }
@@ -198,5 +217,32 @@ public partial class CorePanel : PanelContainer
         label.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         row.AddChild(label);
         return UiKit.Pad(row, 11, 8, 11, 8);
+    }
+
+    private void OnCoreClick()
+    {
+        _state.Click();
+        _core.Pulse();
+    }
+
+    private void OnClicked(double amount, bool crit)
+    {
+        _rewardValue.Text = $"+{amount:0.#}";
+        _rewardValue.AddThemeColorOverride("font_color", crit ? UiKit.Warm : UiKit.Gold);
+    }
+
+    private void Refresh()
+    {
+        if (_critValue == null)
+            return;
+
+        _critValue.Text = $"{_state.CritPercent}%";
+        _comboValue.Text = $"×{_state.Combo:0.0}";
+
+        var goal = _state.NextGoal();
+        var cost = Mathf.Max(1.0, goal.Cost);
+        _goalName.Text = goal.Name;
+        _goalAmount.Text = $"{_state.Rice:N0} / {cost:N0}";
+        _goalBar.Value = Mathf.Clamp((float)(_state.Rice / cost * 100.0), 0f, 100f);
     }
 }

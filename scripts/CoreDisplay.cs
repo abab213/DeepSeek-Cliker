@@ -4,12 +4,32 @@ using System;
 public partial class CoreDisplay : Control
 {
     private float _time;
+    private float _pulse;
     private Texture2D? _whale;
+
+    public event Action? Clicked;
 
     public CoreDisplay()
     {
         CustomMinimumSize = new Vector2(320, 320);
-        MouseFilter = MouseFilterEnum.Ignore;
+        MouseFilter = MouseFilterEnum.Stop;
+        MouseDefaultCursorShape = CursorShape.PointingHand;
+    }
+
+    public void Pulse()
+    {
+        _pulse = 1f;
+    }
+
+    public override void _GuiInput(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouse &&
+            mouse.ButtonIndex == MouseButton.Left &&
+            mouse.Pressed)
+        {
+            Clicked?.Invoke();
+            AcceptEvent();
+        }
     }
 
     public override void _Ready()
@@ -20,6 +40,7 @@ public partial class CoreDisplay : Control
     public override void _Process(double delta)
     {
         _time += (float)delta;
+        _pulse = Mathf.MoveToward(_pulse, 0f, (float)delta * 4.5f);
         QueueRedraw();
     }
 
@@ -81,6 +102,14 @@ public partial class CoreDisplay : Control
         DrawArc(center, discRadius, 0, Mathf.Tau, 128, UiKit.Alpha(UiKit.Cyan, 0.62f), 2.2f, true);
         DrawArc(center, discRadius - 7, 0, Mathf.Tau, 128, UiKit.Alpha(UiKit.Gold, 0.18f), 1f, true);
         DrawArc(center, discRadius + 3, -2.6f, -0.5f, 40, UiKit.Alpha(UiKit.Cyan, 0.8f), 4f, true);
+
+        if (_pulse > 0)
+        {
+            float t = 1f - _pulse;
+            float ring = discRadius * (0.98f + t * 0.28f);
+            DrawArc(center, ring, 0, Mathf.Tau, 96, UiKit.Alpha(UiKit.Cyan, _pulse * 0.55f), 3f, true);
+            DrawArc(center, ring - 6, 0, Mathf.Tau, 96, UiKit.Alpha(UiKit.Gold, _pulse * 0.28f), 1.5f, true);
+        }
 
         var sheen = new Vector2(center.X - discRadius * 0.2f, center.Y - discRadius * 0.35f);
         for (int i = 0; i < 16; i++)

@@ -6,6 +6,7 @@ public partial class Main : Control
     private BattlePanel _battle = null!;
     private CorePanel _core = null!;
     private ShopPanel _shop = null!;
+    private GameState _state = null!;
 
     public override void _Ready()
     {
@@ -34,7 +35,8 @@ public partial class Main : Control
         layout.AddThemeConstantOverride("separation", 16);
         frame.AddChild(layout);
 
-        layout.AddChild(new TopBar());
+        _state = new GameState();
+        layout.AddChild(new TopBar(_state));
 
         var content = new HBoxContainer
         {
@@ -45,8 +47,8 @@ public partial class Main : Control
         layout.AddChild(content);
 
         _battle = new BattlePanel();
-        _core = new CorePanel();
-        _shop = new ShopPanel();
+        _core = new CorePanel(_state);
+        _shop = new ShopPanel(_state);
 
         content.AddChild(_battle);
         content.AddChild(_core);
@@ -54,7 +56,27 @@ public partial class Main : Control
 
         AddChild(frame);
 
+        if (HasArg("--demo"))
+        {
+            for (int i = 0; i < 12; i++)
+                _state.Click();
+            _state.TryBuy(0);
+        }
+
         CaptureIfRequested();
+    }
+
+    private static bool HasArg(string value)
+    {
+        foreach (var arg in OS.GetCmdlineUserArgs())
+            if (arg == value)
+                return true;
+        return false;
+    }
+
+    public override void _Process(double delta)
+    {
+        _state.Tick(delta);
     }
 
     private async void CaptureIfRequested()
