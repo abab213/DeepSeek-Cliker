@@ -26,6 +26,7 @@ public partial class BattlePanel : PanelContainer
     private void BuildStage(Control stage)
     {
         AddTexture(stage, "res://assets/art/road_battlefield.svg", Vector2.Zero, new Vector2(StageWidth, StageHeight));
+        AddTexture(stage, "res://assets/art/sandbag_line.svg", new Vector2(0, 575), new Vector2(500, 90));
 
         var fx = new StreetFx();
         fx.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -96,7 +97,7 @@ public partial class BattlePanel : PanelContainer
         var location = UiKit.HBox(5);
         location.AddChild(UiKit.Label("望京高架 · 防线 03", 10, UiKit.Alpha(UiKit.Cyan, 0.8f), UiKit.BodyFont));
         location.AddChild(UiKit.HSpace(0, true));
-        location.AddChild(UiKit.Label("铁盆号", 9, UiKit.Alpha(UiKit.Text, 0.7f), UiKit.BodyFont));
+        location.AddChild(UiKit.Label("待命", 9, UiKit.Alpha(UiKit.Green, 0.75f), UiKit.BodyFont));
 
         var waveRow = UiKit.HBox(6);
         waveRow.AddChild(UiKit.Icon("res://assets/icons/icon_skull.svg", 13, UiKit.Red));
@@ -186,7 +187,7 @@ public partial class BattlePanel : PanelContainer
 
         var auto = UiKit.HBox(5);
         auto.AddChild(UiKit.Icon("res://assets/icons/icon_fire.svg", 12, UiKit.Alpha(UiKit.Green, 0.85f)));
-        auto.AddChild(UiKit.Label("自动待命", 10, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BodyFont));
+        auto.AddChild(UiKit.Label("防线待命", 10, UiKit.Alpha(UiKit.Green, 0.9f), UiKit.BodyFont));
         bottom.AddChild(auto);
 
         bottom.AddChild(UiKit.HSpace(0, true));
