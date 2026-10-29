@@ -2,6 +2,9 @@ using Godot;
 
 public partial class TopBar : PanelContainer
 {
+    public event System.Action? PausePressed;
+    public event System.Action? SettingsPressed;
+
     private readonly GameState _state;
     private Label _rice = null!;
     private Label _rate = null!;
@@ -198,8 +201,12 @@ public partial class TopBar : PanelContainer
         actions.AddChild(online);
 
         actions.AddChild(MakeDivider(28));
-        actions.AddChild(IconButton("res://assets/icons/icon_pause.svg", "暂停"));
-        actions.AddChild(IconButton("res://assets/icons/icon_settings.svg", "设置"));
+        var pause = IconButton("res://assets/icons/icon_pause.svg", "暂停");
+        pause.Pressed += () => PausePressed?.Invoke();
+        actions.AddChild(pause);
+        var settings = IconButton("res://assets/icons/icon_settings.svg", "设置");
+        settings.Pressed += () => SettingsPressed?.Invoke();
+        actions.AddChild(settings);
 
         return actions;
     }

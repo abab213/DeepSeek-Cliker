@@ -19,3 +19,6 @@ obj/
 
 # Temporary preview renders
 /preview/
+
+# Local save data
+/savegame.json

@@ -43,6 +43,9 @@ public sealed class GameState
     public bool WaveActive { get; private set; }
     public double WaveTimer { get; private set; } = 5;
     public bool GameOver { get; private set; }
+    public bool Paused { get; private set; }
+    public bool AutoSave { get; set; } = true;
+    public bool EffectsEnabled { get; set; } = true;
     public double Combo { get; private set; } = 1.0;
     public int CritPercent => (int)Math.Round(CritChance * 100);
 
@@ -132,7 +135,7 @@ public sealed class GameState
 
     public void Tick(double delta)
     {
-        if (GameOver)
+        if (GameOver || Paused)
             return;
 
         Rice += Production * delta;
@@ -157,7 +160,7 @@ public sealed class GameState
 
     public void Click()
     {
-        if (GameOver)
+        if (GameOver || Paused)
             return;
 
         Combo = Math.Min(ComboMax, Combo + ComboStep);
@@ -173,7 +176,7 @@ public sealed class GameState
 
     public bool TryBuy(int index)
     {
-        if (GameOver || index < 0 || index >= Buildings.Count)
+        if (GameOver || Paused || index < 0 || index >= Buildings.Count)
             return false;
 
         var building = Buildings[index];
@@ -235,5 +238,67 @@ public sealed class GameState
     {
         Production = Buildings.Sum(b => b.Production * b.Owned);
         CombatPower = 24 + Buildings.Sum(b => b.Combat * b.Owned);
+    }
+
+    public void Pause()
+    {
+        if (GameOver || Paused)
+            return;
+        Paused = true;
+        Changed?.Invoke();
+    }
+
+    public void Resume()
+    {
+        if (!Paused)
+            return;
+        Paused = false;
+        Changed?.Invoke();
+    }
+
+    public SaveData CreateSave()
+    {
+        return new SaveData
+        {
+            Version = 1,
+            SavedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+            Rice = Rice,
+            Owned = Buildings.Select(b => b.Owned).ToArray(),
+            Defense = Defense,
+            Kills = Kills,
+            Score = Score,
+            Wave = Wave,
+            AutoSave = AutoSave,
+            EffectsEnabled = EffectsEnabled,
+        };
+    }
+
+    public void ApplySave(SaveData data)
+    {
+        Rice = Math.Max(0, data.Rice);
+        if (data.Owned != null)
+        {
+            for (int i = 0; i < Buildings.Count && i < data.Owned.Length; i++)
+                Buildings[i].Owned = Math.Max(0, data.Owned[i]);
+        }
+
+        MaxDefense = 1000;
+        Defense = Math.Clamp(data.Defense, 0, MaxDefense);
+        if (Defense <= 0)
+            Defense = MaxDefense;
+
+        Kills = Math.Max(0, data.Kills);
+        Score = Math.Max(0, data.Score);
+        Wave = Math.Max(1, data.Wave);
+        AutoSave = data.AutoSave;
+        EffectsEnabled = data.EffectsEnabled;
+        WaveActive = false;
+        WaveTimer = 5;
+        GameOver = false;
+        Paused = false;
+        Combo = 1;
+        _comboTimer = 0;
+        Recalculate();
+        Changed?.Invoke();
     }
 }

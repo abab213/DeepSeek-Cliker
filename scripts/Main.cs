@@ -7,6 +7,8 @@ public partial class Main : Control
     private CorePanel _core = null!;
     private ShopPanel _shop = null!;
     private GameState _state = null!;
+    private MenuOverlay _menu = null!;
+    private double _autosaveTimer;
 
     public override void _Ready()
     {
@@ -36,7 +38,16 @@ public partial class Main : Control
         frame.AddChild(layout);
 
         _state = new GameState();
-        layout.AddChild(new TopBar(_state));
+        var save = SaveService.Load();
+        if (save != null)
+            _state.ApplySave(save);
+
+        _menu = new MenuOverlay(_state);
+
+        var top = new TopBar(_state);
+        top.PausePressed += _menu.OpenPause;
+        top.SettingsPressed += _menu.OpenSettings;
+        layout.AddChild(top);
 
         var content = new HBoxContainer
         {
@@ -55,6 +66,7 @@ public partial class Main : Control
         content.AddChild(_shop);
 
         AddChild(frame);
+        AddChild(_menu);
 
         if (HasArg("--demo"))
         {
@@ -65,6 +77,13 @@ public partial class Main : Control
 
         if (HasArg("--gameover"))
             _state.DamageDefense(5000);
+
+        if (HasArg("--pause"))
+            _menu.OpenPause();
+        if (HasArg("--settings"))
+            _menu.OpenSettings();
+        if (HasArg("--savetest"))
+            SaveService.Save(_state);
 
         CaptureIfRequested();
     }
@@ -80,6 +99,16 @@ public partial class Main : Control
     public override void _Process(double delta)
     {
         _state.Tick(delta);
+
+        if (_state.Paused || _state.GameOver || !_state.AutoSave)
+            return;
+
+        _autosaveTimer += delta;
+        if (_autosaveTimer >= 30)
+        {
+            _autosaveTimer = 0;
+            SaveService.Save(_state);
+        }
     }
 
     private async void CaptureIfRequested()

@@ -71,6 +71,9 @@ public partial class CombatField : Control
 
     public override void _Process(double delta)
     {
+        if (_state.Paused)
+            return;
+
         var dt = (float)delta;
         _time += dt;
         _muzzleFlash = Mathf.MoveToward(_muzzleFlash, 0f, dt * 9f);
@@ -122,7 +125,7 @@ public partial class CombatField : Control
             if (zombie.Y >= DefenseLine)
             {
                 _state.DamageDefense(zombie.Damage);
-                _hitFlash = 1f;
+                _hitFlash = _state.EffectsEnabled ? 1f : 0f;
                 Burst(new Vector2(zombie.X, DefenseLine), UiKit.Red, 8);
                 _zombies.RemoveAt(i);
             }
@@ -199,16 +202,19 @@ public partial class CombatField : Control
             return;
 
         _fireTimer = 0.38f;
-        _muzzleFlash = 1f;
-
         var hit = new Vector2(target.X, target.Y - 38f * target.Scale);
-        _tracers.Add(new Tracer
+
+        if (_state.EffectsEnabled)
         {
-            From = Muzzle,
-            To = hit,
-            Life = 0.09f,
-            MaxLife = 0.09f,
-        });
+            _muzzleFlash = 1f;
+            _tracers.Add(new Tracer
+            {
+                From = Muzzle,
+                To = hit,
+                Life = 0.09f,
+                MaxLife = 0.09f,
+            });
+        }
 
         var damage = 10f + _state.CombatPower * 1.1f;
         target.Hp -= damage;
@@ -227,6 +233,9 @@ public partial class CombatField : Control
 
     private void Burst(Vector2 pos, Color color, int count)
     {
+        if (!_state.EffectsEnabled)
+            return;
+
         for (int i = 0; i < count; i++)
         {
             var angle = _rng.RandfRange(0f, Mathf.Tau);
