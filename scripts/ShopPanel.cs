@@ -115,7 +115,7 @@ public partial class ShopPanel : PanelContainer
     private Control BuildSafeZone()
     {
         var safe = UiKit.VBox(6);
-        safe.CustomMinimumSize = new Vector2(0, 104);
+        safe.CustomMinimumSize = new Vector2(0, 162);
         safe.SizeFlagsVertical = SizeFlags.ShrinkEnd;
 
         var head = UiKit.HBox(7);
@@ -126,15 +126,20 @@ public partial class ShopPanel : PanelContainer
         head.AddChild(UiKit.Label("S A F E  Z O N E", 7, UiKit.Alpha(UiKit.Cyan, 0.45f), UiKit.DisplayFont));
         safe.AddChild(head);
 
-        var row = UiKit.HBox(6);
-        row.SizeFlagsVertical = SizeFlags.ExpandFill;
+        var grid = new GridContainer
+        {
+            Columns = 3,
+            SizeFlagsVertical = SizeFlags.ExpandFill,
+        };
+        grid.AddThemeConstantOverride("h_separation", 6);
+        grid.AddThemeConstantOverride("v_separation", 6);
         for (int i = 0; i < _state.Facilities.Count; i++)
         {
             var view = BuildFacilityCard(i);
             _facilityViews.Add(view);
-            row.AddChild(view.Card);
+            grid.AddChild(view.Card);
         }
-        safe.AddChild(row);
+        safe.AddChild(grid);
         return safe;
     }
 
@@ -144,7 +149,7 @@ public partial class ShopPanel : PanelContainer
         var card = new PanelContainer
         {
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            CustomMinimumSize = new Vector2(0, 72),
+            CustomMinimumSize = new Vector2(0, 66),
             TooltipText = $"{facility.Name}：{facility.Description}",
         };
         card.AddThemeStyleboxOverride(
@@ -175,7 +180,7 @@ public partial class ShopPanel : PanelContainer
         bottom.AddChild(button);
         box.AddChild(bottom);
 
-        card.AddChild(UiKit.Pad(box, 8, 5, 8, 5));
+        card.AddChild(UiKit.Pad(box, 8, 4, 8, 4));
         return new FacilityView(facility, card, level, cost, button);
     }
 

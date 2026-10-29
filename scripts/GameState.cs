@@ -59,6 +59,9 @@ public sealed class Facility
     public double DefenseRegen { get; init; }
     public double CooldownReduction { get; init; }
     public int ClickBonus { get; init; }
+    public double GunDamageBonus { get; init; }
+    public double CritBonus { get; init; }
+    public double ProductionBonus { get; init; }
 
     public double Cost => Math.Floor(BaseCost * Math.Pow(Growth, Owned));
 }
@@ -108,10 +111,12 @@ public sealed class GameState
     public double OverloadTimer { get; private set; }
     public double FreezeTimer { get; private set; }
     public double Combo { get; private set; } = 1.0;
-    public int CritPercent => (int)Math.Round(CritChance * 100);
+    public double CritChanceTotal => CritChance + Facilities.Sum(f => f.CritBonus * f.Owned);
+    public int CritPercent => (int)Math.Round(CritChanceTotal * 100);
     public double ClickValue => ClickBase + Facilities.Sum(f => f.ClickBonus * f.Owned);
     public double DefenseRegen => Facilities.Sum(f => f.DefenseRegen * f.Owned);
     public double TacticalCooldownMultiplier => Math.Max(0.5, 1.0 - Facilities.Sum(f => f.CooldownReduction * f.Owned));
+    public double ProductionMultiplier => 1.0 + Facilities.Sum(f => f.ProductionBonus * f.Owned);
 
     public List<Building> Buildings { get; } = new();
     public List<Equipment> Equipment { get; } = new();
@@ -325,6 +330,39 @@ public sealed class GameState
             MaxLevel = 5,
             ClickBonus = 1,
         });
+        Facilities.Add(new Facility
+        {
+            Name = "弹药库",
+            Description = "稳定供应穿甲弹链，提高机枪整体伤害。",
+            Icon = "res://assets/icons/icon_power.svg",
+            Stat = "每级 +4% 机枪伤害",
+            Accent = UiKit.Cyan,
+            BaseCost = 800,
+            MaxLevel = 5,
+            GunDamageBonus = 0.04,
+        });
+        Facilities.Add(new Facility
+        {
+            Name = "雷达站",
+            Description = "提前捕捉尸潮弱点，提高暴击概率。",
+            Icon = "res://assets/icons/icon_star.svg",
+            Stat = "每级 +1% 暴击率",
+            Accent = UiKit.Gold,
+            BaseCost = 650,
+            MaxLevel = 5,
+            CritBonus = 0.01,
+        });
+        Facilities.Add(new Facility
+        {
+            Name = "发电站",
+            Description = "为营地提供稳定电力，提高所有建筑产出。",
+            Icon = "res://assets/icons/icon_rate.svg",
+            Stat = "每级 +8% 建筑产出",
+            Accent = UiKit.Green,
+            BaseCost = 900,
+            MaxLevel = 3,
+            ProductionBonus = 0.08,
+        });
 
         Tacticals.Add(new Tactical
         {
@@ -390,7 +428,7 @@ public sealed class GameState
         Combo = Math.Min(ComboMax, Combo + ComboStep);
         _comboTimer = ComboWindow;
 
-        bool crit = _rng.Randf() < CritChance;
+        bool crit = _rng.Randf() < CritChanceTotal;
         double gain = ClickValue * Combo * (crit ? 2.0 : 1.0);
         Rice += gain;
 
@@ -445,6 +483,7 @@ public sealed class GameState
 
         Rice -= facility.Cost;
         facility.Owned++;
+        Recalculate();
         PurchaseMade?.Invoke();
         Changed?.Invoke();
         return true;
@@ -610,10 +649,11 @@ public sealed class GameState
 
     private void Recalculate()
     {
-        Production = Buildings.Sum(b => b.Production * b.Owned);
+        Production = Buildings.Sum(b => b.Production * b.Owned) * ProductionMultiplier;
         CombatPower = 24 + Buildings.Sum(b => b.Combat * b.Owned) + Equipment.Sum(e => e.PowerBonus * e.Owned);
 
         double damage = 10 + CombatPower * 1.1 + Equipment.Sum(e => e.DamageBonus * e.Owned);
+        damage *= 1.0 + Facilities.Sum(f => f.GunDamageBonus * f.Owned);
         GunDamage = damage;
         FireInterval = Math.Max(0.14, 0.38 - Equipment.Sum(e => e.FireIntervalDelta * e.Owned));
         BruteDamageMultiplier = 1.0 + Equipment.Sum(e => e.BruteBonus * e.Owned);
