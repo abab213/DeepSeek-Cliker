@@ -1,0 +1,181 @@
+name: Windows Release
+
+# 触发方式：
+#   推一个 v* 标签        → 构建 + 签名 + 发 GitHub Release
+#   手动 workflow_dispatch → 仅构建 + 签名，产物留在 Actions 里
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write      # 创建 Release
+
+env:
+  GODOT_VERSION: "4.7.2"
+  PROJECT_NAME: ClickDeepSeek
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+
+jobs:
+  build:
+    name: Build and Sign (Windows)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+          cache: true
+          cache-dependency-path: "**/*.csproj"
+
+      # Godot 引擎本体与 mono 导出模板。模板必须放在
+      # %APPDATA%\Godot\export_templates\<版本>.mono\ 下，否则导出会报
+      # "No export template found"。
+      - name: Install Godot and export templates
+        shell: pwsh
+        run: |
+          function Get-FirstAvailable([string[]] $urls, [string] $out) {
+            foreach ($u in $urls) {
+              try {
+                Invoke-WebRequest $u -OutFile $out -ErrorAction Stop
+                Write-Host "downloaded: $u"
+                return
+              } catch {
+                Write-Host "miss: $u"
+              }
+            }
+            throw "none of these URLs worked: $($urls -join ', ')"
+          }
+
+          $v = $env:GODOT_VERSION
+          $base = "https://github.com/godotengine/godot/releases/download/$v-stable"
+          $mirror = "https://github.com/godotengine/godot-builds/releases/download/$v-stable"
+
+          $godotZip = Join-Path $env:RUNNER_TEMP "godot.zip"
+          Get-FirstAvailable @("$base/Godot_v$v-stable_mono_win64.zip", "$mirror/Godot_v$v-stable_mono_win64.zip") $godotZip
+          Expand-Archive $godotZip -DestinationPath (Join-Path $env:RUNNER_TEMP "godot")
+
+          $exe = Get-ChildItem (Join-Path $env:RUNNER_TEMP "godot") -Recurse -Filter "Godot_v$v-stable_mono_win64.exe" |
+                 Select-Object -First 1
+          if (-not $exe) { throw "Godot executable not found after extraction" }
+          "GODOT_EXE=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+          $tpz = Join-Path $env:RUNNER_TEMP "templates.tpz"
+          Get-FirstAvailable @("$base/Godot_v$v-stable_mono_export_templates.tpz", "$mirror/Godot_v$v-stable_mono_export_templates.tpz") $tpz
+          Expand-Archive $tpz -DestinationPath (Join-Path $env:RUNNER_TEMP "tpl")
+
+          $dst = Join-Path $env:APPDATA "Godot\export_templates\$v.stable.mono"
+          New-Item -ItemType Directory -Force $dst | Out-Null
+          Copy-Item (Join-Path $env:RUNNER_TEMP "tpl\templates\*") $dst -Recurse -Force
+
+          if (-not (Test-Path (Join-Path $dst "windows_release_x86_64.exe"))) {
+            throw "mono export template missing: windows_release_x86_64.exe"
+          }
+
+      # PathMap 把 CI 上的绝对路径映射掉，避免发布物里残留 runner 路径。
+      - name: Build C#
+        shell: pwsh
+        run: |
+          dotnet build ClickDeepSeek.sln -c Release --nologo `
+            -p:Deterministic=true -p:DebugType=none "-p:PathMap=$env:GITHUB_WORKSPACE=."
+
+      - name: Export Windows build
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build/out | Out-Null
+          & $env:GODOT_EXE --headless --path . --export-release "Windows Desktop" "build/out/$env:PROJECT_NAME.exe"
+          if ($LASTEXITCODE -ne 0) { throw "Godot export failed (exit $LASTEXITCODE)" }
+          Get-ChildItem build/out -Recurse | Select-Object FullName, Length
+
+      - name: Stage unsigned artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build/stage | Out-Null
+          Copy-Item build/out/* build/stage/ -Recurse -Force
+
+      - name: Upload unsigned artifact
+        id: unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-unsigned
+          path: build/stage/**
+          if-no-files-found: error
+
+      # SignPath 下载上面的 artifact、签名、再把签好的文件放回 build/signed。
+      # 三个变量在仓库 Settings → Variables 里配置；没配置时这一步跳过，
+      # 产物保持未签名（方便先验证构建链路）。
+      - name: Sign with SignPath
+        if: vars.SIGNPATH_PROJECT_SLUG != ''
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: build/signed
+
+      - name: Resolve release source
+        shell: pwsh
+        run: |
+          if (Test-Path "build/signed/$env:PROJECT_NAME.exe") {
+            $src = "build/signed"
+            $state = "signed"
+          } else {
+            $src = "build/stage"
+            $state = "unsigned"
+          }
+          "RELEASE_SRC=$src" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "RELEASE_STATE=$state" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "签名状态：$state" | Out-File $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+      - name: Package release zip
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}"
+          if ("${{ github.ref_type }}" -ne "tag") {
+            $ver = "dev-" + "${{ github.sha }}".Substring(0, 7)
+          }
+
+          $dir = "dist/ClickDeepSeek_$ver"
+          New-Item -ItemType Directory -Force $dir | Out-Null
+          Copy-Item "$env:RELEASE_SRC/*" $dir -Recurse -Force
+          Copy-Item "packaging/说明.txt" $dir -Force
+
+          $zip = "dist/ClickDeepSeek_$ver.zip"
+          Compress-Archive -Path $dir -DestinationPath $zip -CompressionLevel Optimal
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
+
+          "RELEASE_ZIP=$zip" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          @(
+            "### Release: $zip ($env:RELEASE_STATE)",
+            "",
+            "SHA256: $hash"
+          ) | Out-File $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+      - name: Upload release zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-zip
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.RELEASE_ZIP }}
+          generate_release_notes: true
+          body: |
+            下载 `ClickDeepSeek_*_win64.zip`，解压后双击 `ClickDeepSeek.exe` 即可游玩。
+
+            运行需要 **.NET 9 运行时**（x64）。
+
+            若 Windows 提示"已保护你的电脑"，请在解压前右键 zip → 属性 → 解除锁定。

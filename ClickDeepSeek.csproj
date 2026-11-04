@@ -10,5 +10,8 @@
     <Compile Remove="build/**/*.cs" />
     <Compile Remove="preview/**/*.cs" />
     <Compile Remove="tools/**/*.cs" />
+    <Compile Remove="dist/**/*.cs" />
+    <Compile Remove="packaging/**/*.cs" />
+    <Compile Remove="DeepSeekCliker(release)/**/*.cs" />
   </ItemGroup>
 </Project>

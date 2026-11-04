@@ -1,0 +1,29 @@
+Click_DeepSeek / 深潜防线 —— 运行说明
+=====================================
+
+【怎么启动】
+双击 ClickDeepSeek.exe 即可直接进入游戏。
+
+【Windows 提示"已保护你的电脑"怎么办】
+本程序的 ClickDeepSeek.exe 带有代码签名，发行者信息可在
+右键 → 属性 → 数字签名 里核对。如果仍然弹窗，通常是文件从网络下载后
+带了"网络标记"，按下面任一方式处理：
+
+  1. 解压前：右键 zip → 属性 → 勾选"解除锁定" → 确定，再解压；
+  2. 已经解压了：右键 ClickDeepSeek.exe → 属性 → 勾选"解除锁定" → 确定；
+  3. 或在弹窗里点「更多信息」→「仍要运行」。
+
+【存档在哪】
+ClickDeepSeek.exe 同级的 save\savegame.json（第一次运行后自动生成）。
+如果游戏放在只读目录（如 C:\Program Files），存档会自动改存到
+%APPDATA%\Godot\app_userdata\ 下，不会丢档。
+
+【运行环境】
+Windows 10/11 x64，并安装 .NET 9 运行时
+（https://dotnet.microsoft.com/download/dotnet/9.0 选择 .NET Runtime）。
+如果双击后一闪而过或提示缺少 .NET，先装它。
+
+【目录说明】
+ClickDeepSeek.exe   游戏本体（引擎与游戏数据已合并到单个 exe）
+data_ClickDeepSeek_windows_x86_64\   .NET 程序集，请勿删除
+save\               存档目录（运行后自动生成）

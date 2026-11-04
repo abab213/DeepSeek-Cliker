@@ -135,7 +135,22 @@ Copy-Item .godot/mono/temp/bin/Debug/ClickDeepSeek.dll `
           build/Game/.godot/mono/temp/bin/Debug/ClickDeepSeek.dll -Force
 ```
 
-不要让下载者直接双击 `ClickDeepSeek.exe`（会进入引擎项目管理器），入口是快捷方式。
+不要让下载者直接双击 `ClickDeepSeek.exe`（会进入引擎项目管理器），入口是 `启动游戏.cmd`。
+
+## 正式发布（CI + 代码签名）
+
+推一个 `v*` 标签，GitHub Actions 会自动编译、导出、打包，并通过 SignPath Foundation
+的免费开源代码签名给 exe 签名，再发 Release：
+
+```powershell
+git tag v0.3.1
+git push origin v0.3.1
+```
+
+工作流：[.github/workflows/windows-release.yml](.github/workflows/windows-release.yml)；
+SignPath 控制台配置、仓库变量与排查表：[docs/release-signing.md](docs/release-signing.md)。
+
+CI 产物是标准导出包（`ClickDeepSeek.exe` + `data_*` 程序集目录），双击即玩，不再需要启动脚本。
 
 ## 目录
 
