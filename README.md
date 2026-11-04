@@ -205,6 +205,17 @@ example.md                 防线布局草图
 - **v0.3.1-package**：Windows 发行形态改造——移除未签名的自编译启动器，改用 Godot 官方签名的引擎启动；存档改写到安装目录 `save/`；发布目录脱敏。
 - **v0.3.2-ci**：GitHub Actions 流水线跑通——自动下载 Godot 与 mono 导出模板、编译、导出、打包并发布 Release；预留 SignPath 免费代码签名。
 
+## Privacy
+
+The game does not collect, transmit, or share any personal data. There is no telemetry and
+the game makes no network requests at runtime. Save files are stored locally: `save/savegame.json`
+next to the executable, falling back to `%APPDATA%\Godot\app_userdata\` when that location is read-only.
+
+## Code signing
+
+Windows binaries are code-signed through the [SignPath Foundation](https://signpath.org/) program.
+Signing status for each release is noted on the release page. Build details: [docs/release-signing.md](docs/release-signing.md).
+
 ## 许可证
 
 本项目以 [MIT 许可证](LICENSE) 发布，Copyright (c) 2026 abab213。

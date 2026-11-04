@@ -201,3 +201,8 @@ jobs:
             运行需要 **.NET 9 运行时**（x64）。
 
             若 Windows 提示"已保护你的电脑"，请在解压前右键 zip → 属性 → 解除锁定。
+
+            ---
+
+            Windows binaries are code-signed through the
+            [SignPath Foundation](https://signpath.org/) program.
