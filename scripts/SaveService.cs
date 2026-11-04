@@ -43,9 +43,37 @@ public static class SaveService
         var home = System.Environment.GetEnvironmentVariable("CLICKDEEPSEEK_HOME");
         if (!string.IsNullOrWhiteSpace(home))
             paths.Add(Path.Combine(home, "savegame.json"));
+        var portable = PortableSavePath();
+        if (portable != null)
+            paths.Add(portable);
         paths.Add(ProjectSettings.GlobalizePath(ResSave));
         paths.Add(ProjectSettings.GlobalizePath(UserSave));
         return paths.ToArray();
+    }
+
+    /// <summary>
+    /// 发布版的存档位置：可执行文件同级的 save/ 目录。
+    /// 目录只读（如装在 Program Files）时会写失败，自动回退到下一条路径。
+    /// 在编辑器里调试时不启用，避免把存档写进引擎目录。
+    /// </summary>
+    private static string? PortableSavePath()
+    {
+        try
+        {
+            var exe = OS.GetExecutablePath();
+            if (string.IsNullOrWhiteSpace(exe))
+                return null;
+            var name = Path.GetFileNameWithoutExtension(exe);
+            if (name.StartsWith("Godot", StringComparison.OrdinalIgnoreCase))
+                return null;
+            var dir = Path.GetDirectoryName(exe);
+            return string.IsNullOrEmpty(dir) ? null : Path.Combine(dir, "save", "savegame.json");
+        }
+        catch (Exception ex)
+        {
+            LastError = ex.Message;
+            return null;
+        }
     }
 
     public static bool Save(GameState state)

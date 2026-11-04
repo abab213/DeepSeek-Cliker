@@ -25,3 +25,11 @@ obj/
 
 # Local packaged build/installer output
 /build/
+
+# Code signing keys (never commit private keys)
+*.pfx
+*.p12
+*.pvk
+
+# Release archives
+/dist/

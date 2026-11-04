@@ -110,6 +110,33 @@ Godot_v4.7.2-stable_mono_win64_console.exe --path .
 dotnet build ClickDeepSeek.csproj
 ```
 
+## 发布（Windows 免安装包）
+
+`build/` 就是可以直接打 zip 上传的目录：
+
+```text
+ClickDeepSeek.exe   Godot 4.7.2 引擎本体，保留 Godot 官方 Authenticode 签名
+Game/               工程与素材，含预编译的 .godot/mono/temp/bin/Debug/ClickDeepSeek.dll
+GodotSharp/         .NET 托管支持库
+save/               存档目录（安装目录只读时自动回落到 %APPDATA%）
+深潜防线.lnk         入口，等价于 ClickDeepSeek.exe --path Game
+说明.txt            给下载者的运行说明
+```
+
+两条必须遵守的规矩：
+
+1. **不要用 rcedit 改 exe 的图标或版本信息**，任何 PE 资源改动都会让 Godot 的官方签名失效，
+   Windows 会重新把它当成"未知发布者"。要品牌化就等自建证书签名之后再做。
+2. **每次发版都要刷新 Game 里的程序集**：
+
+```powershell
+dotnet build ClickDeepSeek.csproj
+Copy-Item .godot/mono/temp/bin/Debug/ClickDeepSeek.dll `
+          build/Game/.godot/mono/temp/bin/Debug/ClickDeepSeek.dll -Force
+```
+
+不要让下载者直接双击 `ClickDeepSeek.exe`（会进入引擎项目管理器），入口是快捷方式。
+
 ## 目录
 
 ```text
