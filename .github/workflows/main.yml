@@ -1,0 +1,13 @@
+name: CI Smoke Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show files
+        shell: pwsh
+        run: Get-ChildItem -Force; Get-ChildItem .github/workflows -Force
