@@ -90,8 +90,22 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force build/out | Out-Null
-          & $env:GODOT_EXE --headless --path . --export-release "Windows Desktop" "build/out/$env:PROJECT_NAME.exe"
-          if ($LASTEXITCODE -ne 0) { throw "Godot export failed (exit $LASTEXITCODE)" }
+
+          Write-Host "=== templates dir ==="
+          Get-ChildItem "$env:APPDATA\Godot\export_templates" -Directory -ErrorAction SilentlyContinue |
+            Select-Object Name
+          Write-Host "=== preset head ==="
+          Get-Content export_presets.cfg -TotalCount 4
+
+          & $env:GODOT_EXE --headless --path . --export-release "Windows Desktop" "build/out/$env:PROJECT_NAME.exe" 2>&1 |
+            Tee-Object -FilePath build\export.log
+          $code = $LASTEXITCODE
+          Write-Host "=== godot exit code: $code ==="
+          if ($code -ne 0) {
+            Write-Host "=== last 60 lines of godot output ==="
+            Get-Content build\export.log -Tail 60
+            throw "Godot export failed (exit $code)"
+          }
           Get-ChildItem build/out -Recurse | Select-Object FullName, Length
 
       - name: Stage unsigned artifact
@@ -151,7 +165,14 @@ jobs:
           Copy-Item "packaging/说明.txt" $dir -Force
 
           $zip = "dist/ClickDeepSeek_$ver.zip"
-          Compress-Archive -Path $dir -DestinationPath $zip -CompressionLevel Optimal
+          # Compress-Archive 对 180 MB 的 exe 慢到不可用，改用 runner 自带的 7-Zip
+          $sevenZip = "C:\Program Files\7-Zip\7z.exe"
+          if (Test-Path $sevenZip) {
+            & $sevenZip a -tzip $zip "$dir\*" -mx=5 -bso0 -bsp0
+            if ($LASTEXITCODE -ne 0) { throw "7z failed (exit $LASTEXITCODE)" }
+          } else {
+            Compress-Archive -Path $dir -DestinationPath $zip -CompressionLevel Optimal
+          }
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
 
           "RELEASE_ZIP=$zip" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
