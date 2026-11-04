@@ -29,8 +29,9 @@ SignPath Foundation 只签**开源项目**的构建产物，签署主体显示�
 ### 2. 公开托管仓库
 
 ```powershell
-git remote add origin https://github.com/<你的账号>/Click_DeepSeek.git
+git remote add origin https://github.com/abab213/DeepSeek-Cliker.git
 git push -u origin master
+git push origin --tags
 ```
 
 ### 3. SignPath 账号与项目
