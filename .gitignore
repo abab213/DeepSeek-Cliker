@@ -35,3 +35,6 @@ obj/
 
 # Staged release folder
 /DeepSeekCliker(release)/
+
+# Agent instructions (kept local, not published)
+/AGENTS.md
