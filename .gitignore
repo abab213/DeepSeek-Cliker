@@ -33,3 +33,6 @@ obj/
 
 # Release archives
 /dist/
+
+# Staged release folder
+/DeepSeekCliker(release)/
