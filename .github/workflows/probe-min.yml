@@ -1,0 +1,10 @@
+name: Probe Min
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: windows-latest
+    steps:
+      - run: echo min-ok
